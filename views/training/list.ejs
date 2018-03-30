@@ -1,0 +1,136 @@
+<%
+/**
+ * Copyright 2017 Nippon Information and Communication Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+%>
+<!DOCTYPE html>
+<html>
+<%- include("../common/head"); %>
+<body>
+<%- include("../common/header",{ dir : [{ name: "学習データ表示", path: ""}]});%>
+  <div class="container">
+
+    <div class="page-header">
+      <h2 class="text-primary">学習データ確認</h2>
+      <h5 class="text-primary">学習データを表示します</h5>
+    </div>
+
+    <div class="text-right">
+			<ul class="pagination" style="margin-bottom: 10px;">
+				<li>
+					<a href="./list?p=1" aria-label="最初のページ"><span aria-hidden="true">«</span></a>
+				</li>
+				<% for(var i=page.first; i<=page.last; i++){ %>
+					<% if(i == page.now){ %>
+						<li class="active"><a href="./list?p=<%= i %>"><%= i %></a></li>
+					<% } else { %>
+						<li><a href="./list?p=<%= i %>"><%= i %></a></li>
+					<% } %>
+				<% } %>
+				<li>
+					<a href="./list?p=<%= page.max %>" aria-label="最後のページ"><span aria-hidden="true">»</span></a>
+				</li>
+			</ul>
+		</div>
+
+    <table class="table table-striped table-bordered" style="table-layout:fixed;">
+      <thead>
+        <tr class="info">
+          <th style="width:100px;">No</th>
+          <th>質問</th>
+          <th style="min-width:300px;max-width:500px;">回答ID・関連度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(var i=0; i < data.length; i++){ %>
+        <%
+            var firstFlag = false;
+            var nextFlag = false;
+
+            if(i==0){
+              firstFlag = true;
+            }else{
+              if(data[i]["query_id"] != data[i-1]["query_id"]){
+                firstFlag = true;
+              }
+            }
+
+            if(i==data.length-1){
+              nextFlag = true;
+            }else{
+              if(data[i]["query_id"] != data[i+1]["query_id"]){
+                nextFlag = true;
+              }
+            }
+        %>
+        <% if(firstFlag){ %>
+        <tr>
+          <td><%= data[i]["query_id"] %></td>
+          <td><%= data[i]["query"] %></td>
+          <td>
+            <table class="table table-condensed table-border-none">
+        <% } %>
+              <tr>
+                <form name="form" method="POST" action="/training/update" id="form">
+                  <input type="hidden" name="query_id" class="form-control" value="<%= data[i]['query_id'] %>">
+                  <td style="border:none;"><input type="text" name="data_id" size=10 class="form-control input-sm" required value="<%= data[i]['data_id'] %>" readonly></td>
+                  <td style="width: 80px;"><input type="number" name="relevance" min=0 max=4 class="form-control input-sm" required value="<%= data[i]['relevance'] %>"></td>
+                  <td style="width: 120px;">
+                    <button type="submit" name="mode" class="btn btn-info btn-sm" value="update">更新</button>
+                    <button type="submit" name="mode" class="btn btn-danger btn-sm" value="delete">削除</button>
+                  </td>
+                </form>
+              </tr>
+        <% if(nextFlag){ %>
+              <tr>
+                <form name="form" method="POST" action="/training/update" id="form">
+                  <input type="hidden" name="query_id" class="form-control" value="<%= data[i]['query_id'] %>">
+                  <td><input type="text" name="data_id" size=10 class="form-control input-sm" required value=""></td>
+                  <td><input type="number" name="relevance" min=0 max=4 class="form-control input-sm" required value=""></td>
+                  <td>
+                    <button type="submit" name="mode" class="btn btn-primary btn-sm" value="regist">追加</button>
+                  </td>
+                </form>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <% } %>
+        <% } %>
+      </tbody>
+    </table>
+
+    <div class="text-right">
+			<ul class="pagination" style="margin-top: 10px;">
+				<li>
+					<a href="./list?p=1" aria-label="最初のページ"><span aria-hidden="true">«</span></a>
+				</li>
+				<% for(var i=page.first; i<=page.last; i++){ %>
+					<% if(i == page.now){ %>
+						<li class="active"><a href="./list?p=<%= i %>"><%= i %></a></li>
+					<% } else { %>
+						<li><a href="./list?p=<%= i %>"><%= i %></a></li>
+					<% } %>
+				<% } %>
+				<li>
+					<a href="./list?p=<%= page.max %>" aria-label="最後のページ"><span aria-hidden="true">»</span></a>
+				</li>
+			</ul>
+		</div>
+
+  </div>
+<%- include("../common/footer"); %>
+</body>
+</html>

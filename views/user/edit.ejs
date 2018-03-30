@@ -1,0 +1,54 @@
+<%
+/**
+ * Copyright 2017 Nippon Information and Communication Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+%>
+<!DOCTYPE html>
+<html>
+<%- include("../common/head"); %>
+<body>
+<%- include("../common/header",{ dir : [{ name: "ユーザ編集", path: ""}]});%>
+  <div class="container">
+
+    <div class="page-header">
+      <h2 class="text-primary">ユーザ編集</h2>
+      <h5 class="text-primary">ユーザ情報を編集します</h5>
+    </div>
+
+		<form method="POST" action="/user/edit">
+			<div class="form-group">
+				<label for="id">ユーザID</label>
+				<input type="text" class="form-control" name="id" id="id" value="<%= data.user_id %>" readonly>
+			</div>
+			<div class="form-group">
+				<label for="user_name">ユーザ名</label>
+				<input type="text" class="form-control" name="user_name" id="user_name" placeholder="ユーザを入力してください。" value="<%= data.user_name %>" autocomplete="off">
+			</div>
+			<div class="form-group">
+				<label for="admin_flag">ユーザ区分</label>
+        <select class="form-control" name="admin_flag" id="admin_flag" >
+      		<option value="0" <% if(data.admin_flag == 0){ %> selected <% } %>>一般</option>
+      		<option value="1" <% if(data.admin_flag == 1){ %> selected <% } %>>管理者</option>
+      	</select>
+			</div>
+			<div class="text-right">
+				<button type="submit" class="btn btn-primary">更新</button>
+			</div>
+		</form>
+
+  </div>
+<%- include("../common/footer"); %>
+</body>
+</html>

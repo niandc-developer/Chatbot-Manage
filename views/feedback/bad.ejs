@@ -1,0 +1,72 @@
+<%
+/**
+ * Copyright 2017 Nippon Information and Communication Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+%>
+<!DOCTYPE html>
+<html>
+<%- include("../common/head"); %>
+<body>
+<%- include("../common/header",{ dir : [{ name: "フィードバック", path: ""}]});%>
+	<div class="container">
+
+      <div class="page-header">
+	      <h2 class="text-primary">フィードバック</h2>
+	      <h5 class="text-primary">R&amp;Rに回答がなかったユーザの質問を表示します</h5>
+      </div>
+
+      <table class="table table-striped">
+        <thead>
+          <tr class="info">
+            <th>ID</th>
+						<th>ユーザID</th>
+            <th style="width:45%;">質問</th>
+            <th>回答ID</th>
+						<th>関連度</th>
+						<th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(var i=0; i < data.length; i++){ %>
+					<form method="POST" action="/feedback/bad/move">
+          <tr>
+            <td><%= data[i]['FEEDBACK_ID'] %><input type="hidden" name="feedback_id" value="<%= data[i]['FEEDBACK_ID'] %>"></td>
+						<td><%= data[i]['USER_ID'] %></td>
+            <td><%= data[i]['QUESTION_DATA'] %></td>
+            <td><input type="text" name="data_id" size=10 class="form-control" required></td>
+						<td><input type="number" name="relevance" min=0 max=4 class="form-control" required></td>
+						<td>
+							<button type="submit" class="btn btn-primary">更新</button>
+							<button type="button" class="btn btn-danger" onClick="deleteData(<%= data[i]['FEEDBACK_ID'] %>);">削除</button>
+						</td>
+					</tr>
+					</form>
+          <% } %>
+        </tbody>
+      </table>
+			<form id="deleteForm" method="POST" action="/feedback/delete">
+				<input type="hidden" name="id" value="">
+			</form>
+  </div>
+	<script>
+		function deleteData(id){
+			$form = $("#deleteForm");
+			$("input[name=id]",$form).val(id);
+			$form.submit();
+		}
+	</script>
+<%- include("../common/footer"); %>
+</body>
+</html>

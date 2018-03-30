@@ -1,0 +1,2081 @@
+[
+    {
+        "id": "4350d699.efdaa8",
+        "type": "subflow",
+        "name": "DB Err Check",
+        "info": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "a866c856.f3659"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 440,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "a866c856.f3659",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "b70922af.4ea598",
+        "type": "function",
+        "z": "4350d699.efdaa8",
+        "name": "エラーメッセージ設定",
+        "func": "//異常終了\nmsg.payload = msg.error;\nmsg.statusCode=500;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 520,
+        "y": 100,
+        "wires": [
+            [
+                "aadbf4b0.a7e2f8"
+            ]
+        ]
+    },
+    {
+        "id": "aadbf4b0.a7e2f8",
+        "type": "http response",
+        "z": "4350d699.efdaa8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "a866c856.f3659",
+        "type": "switch",
+        "z": "4350d699.efdaa8",
+        "name": "エラー判定",
+        "property": "error",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 210,
+        "y": 60,
+        "wires": [
+            [],
+            [
+                "b70922af.4ea598",
+                "b33815c4.c5371"
+            ]
+        ]
+    },
+    {
+        "id": "b33815c4.c5371",
+        "type": "debug",
+        "z": "4350d699.efdaa8",
+        "name": "DB Error",
+        "active": true,
+        "console": "true",
+        "complete": "error",
+        "x": 490,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "dd6e6fd8.b14ff8",
+        "type": "subflow",
+        "name": "API開始処理",
+        "info": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "3bd4f8b3.438518"
+                    },
+                    {
+                        "id": "4ef27a00.f120cc"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1680,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "632c1cdd.be3f44",
+                        "port": 0
+                    },
+                    {
+                        "id": "11aa04fc.b0ab7b",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "e9b4e2b1.da6d98",
+        "type": "template",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "エラーレスポンス",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{\n    \"result\" : false,\n    \"errorMessage\" : \"システム認証に失敗しました。\"\n}",
+        "output": "json",
+        "x": 530,
+        "y": 200,
+        "wires": [
+            [
+                "134bbd93.0c2c1a"
+            ]
+        ]
+    },
+    {
+        "id": "134bbd93.0c2c1a",
+        "type": "http response",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "7412a61.a29ac58",
+        "type": "switch",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "SECURE_IDのチェック",
+        "property": "req.headers.x-secure-id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "const.secure_id",
+                "vt": "global"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 250,
+        "y": 140,
+        "wires": [
+            [
+                "4ef27a00.f120cc"
+            ],
+            [
+                "e9b4e2b1.da6d98"
+            ]
+        ]
+    },
+    {
+        "id": "3bd4f8b3.438518",
+        "type": "debug",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "URL",
+        "active": true,
+        "console": "true",
+        "complete": "req.url",
+        "x": 190,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "4ef27a00.f120cc",
+        "type": "change",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "body",
+        "rules": [
+            {
+                "t": "set",
+                "p": "data",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 100,
+        "wires": [
+            [
+                "f92607f0.477528"
+            ]
+        ]
+    },
+    {
+        "id": "b19e643b.4cd22",
+        "type": "dashDB in",
+        "z": "dd6e6fd8.b14ff8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT USER_ID FROM USER_SESSION WHERE SESSION_ID = ?;",
+        "params": "msg.session.session_id",
+        "name": "ユーザID取得",
+        "x": 1210,
+        "y": 80,
+        "wires": [
+            [
+                "632c1cdd.be3f44"
+            ]
+        ]
+    },
+    {
+        "id": "632c1cdd.be3f44",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "ユーザID設定",
+        "func": "if(msg.payload.USER_ID){\n    msg.session.user_id = msg.payload.USER_ID;\n}else{\n    msg.session.user_id = null;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1410,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "22028101.8c422e",
+        "type": "switch",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "",
+        "property": "session.session_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1010,
+        "y": 100,
+        "wires": [
+            [
+                "b19e643b.4cd22"
+            ],
+            [
+                "11aa04fc.b0ab7b"
+            ]
+        ]
+    },
+    {
+        "id": "efdd9e5.bd5236",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "Requestをdataに移動",
+        "info": "",
+        "x": 540,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "9c473405.0b9368",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セキュリティチェック",
+        "info": "",
+        "x": 240,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "b06d17bf.0c5f4",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "Sessionが存在する場合ユーザIDを設定",
+        "info": "",
+        "x": 1290,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "11aa04fc.b0ab7b",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "ユーザID設定",
+        "func": "msg.session.user_id = null;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1410,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "72a02c4f.7839ac",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セキュリティエラー",
+        "info": "",
+        "x": 530,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "103dece9.591cc3",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セッション",
+        "func": "var id = msg.req.headers[\"x-session-id\"];\nmsg.session = {};\nif(id){\n    msg.session.session_id = id;  \n}\n\n// ログ出力\nnode.log(JSON.stringify(msg.session));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 830,
+        "y": 100,
+        "wires": [
+            [
+                "22028101.8c422e"
+            ]
+        ]
+    },
+    {
+        "id": "f92607f0.477528",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "リクエスト",
+        "func": "if(msg.data === \"\"){\n    msg.data = {};\n}\nfor(var key in msg.req.params){\n    msg.data[key] = msg.req.params[key];\n}\n\n//ログ出力\nnode.log(JSON.stringify(msg.data));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 650,
+        "y": 100,
+        "wires": [
+            [
+                "103dece9.591cc3"
+            ]
+        ]
+    },
+    {
+        "id": "3aa3a633.249fd2",
+        "type": "tab",
+        "label": "Discovery",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "c1cc2e81.ebb578",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "変数初期化",
+        "func": "msg.count = 0;\nmsg.maxCount = msg.data.length;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2050,
+        "y": 500,
+        "wires": [
+            [
+                "9e414ad1.11ee18"
+            ]
+        ]
+    },
+    {
+        "id": "3c0175d5.57c01a",
+        "type": "switch",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "property": "count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "maxCount",
+                "vt": "msg"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1850,
+        "y": 640,
+        "wires": [
+            [
+                "9e414ad1.11ee18"
+            ],
+            [
+                "501b0a0b.388af4",
+                "5322c742.27dfb8"
+            ]
+        ]
+    },
+    {
+        "id": "3af2f540.344e3a",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "ユーザ情報",
+        "func": "msg.user=\"test\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1830,
+        "y": 500,
+        "wires": [
+            [
+                "c1cc2e81.ebb578"
+            ]
+        ]
+    },
+    {
+        "id": "edcfc75d.ebbb3",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "FormData作成",
+        "func": "var boundary = \"4sQ4aXLPQwgShpPYnGM8z2SESbWhEL\";\nvar payload = \"\";\nvar CRLF = \"\\r\\n\";\n\nif(msg.metadata){\n    payload += \"--\" + boundary + CRLF;\n    payload += \"Content-Disposition: form-data; name=metadata;\" + CRLF;\n    payload += \"Content-Type: application/json\" + CRLF + CRLF;\n    payload += JSON.stringify(msg.metadata) + CRLF;\n}\n\npayload += \"--\" + boundary + CRLF;\npayload += \"Content-Disposition: form-data; name=file; filename=\" + msg.data_id + \".json\" + CRLF;\npayload += \"Content-Type: application/json\" + CRLF + CRLF;\npayload += JSON.stringify(msg.payload) + CRLF;\npayload += \"--\" + boundary + \"--\" + CRLF;\n\nmsg.payload = payload;\nmsg.headers = {\n    \"Content-Type\": \"multipart/form-data; boundary=\" + boundary,\n    \"Authorization\": \"Basic \" + new Buffer('dd37cd6a-6c87-4183-9690-193b86f4dbde:iADdMuQadZOB').toString('base64'),\n    \"Content-Length\": encodeURI(payload).replace(/%../g, \"*\").length\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1800,
+        "y": 580,
+        "wires": [
+            [
+                "136c77c9.77bd4"
+            ]
+        ]
+    },
+    {
+        "id": "136c77c9.77bd4",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "接続情報",
+        "func": "var environment_id = global.get(\"const.discovery.environment_id\");\nvar version = global.get(\"const.discovery.version\");\nvar collection_id = msg.collection.collection_id;\n\nmsg.url = \"https://gateway.watsonplatform.net/discovery/api/v1/environments/\"+environment_id+\"/collections/\"+collection_id+\"/documents/\" + msg.data_id + \"?version=\" + version;\nmsg.method = \"POST\";\nmsg.headers.Authorization = \"Basic \" + new Buffer(global.get(\"const.discovery.user\") + \":\" + global.get(\"const.discovery.password\")).toString('base64');\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1980,
+        "y": 580,
+        "wires": [
+            [
+                "c7f2e779.bef8f8"
+            ]
+        ]
+    },
+    {
+        "id": "c7f2e779.bef8f8",
+        "type": "http request",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "url": "",
+        "tls": "",
+        "x": 2190,
+        "y": 580,
+        "wires": [
+            [
+                "3c0175d5.57c01a"
+            ]
+        ]
+    },
+    {
+        "id": "9e414ad1.11ee18",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "データ設定",
+        "func": "msg.payload = msg.data[msg.count++];\nmsg.data_id = msg.payload.data_id;\n\n// メタデータ切り分け\nvar meta = {\n  data_id : msg.payload.data_id,\n  display_answer : msg.payload.display_answer\n};\n\nmsg.payload.data_id = undefined;\nmsg.payload.display_answer = undefined;\n\nmsg.metadata = meta;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1610,
+        "y": 580,
+        "wires": [
+            [
+                "edcfc75d.ebbb3"
+            ]
+        ]
+    },
+    {
+        "id": "501b0a0b.388af4",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 2130,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "4ba06c03.b4b63c",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "取得データ整形(Array,Lower)",
+        "func": "// JSONのkeyをLower化\nfunction format(data){\n    var formatted = {};\n    for(var key in data){\n        formatted[key.toLowerCase()] = data[key];\n    }\n    return formatted;\n}\n\n// Arrayに統一\nvar data = [];\nif(!Array.isArray(msg.payload)){\n    data.push(format(msg.payload));\n}else{\n    for(i=0; i < msg.payload.length; i++){\n        data.push(format(msg.payload[i]));\n    }\n}\nmsg.data = data;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1560,
+        "y": 500,
+        "wires": [
+            [
+                "3af2f540.344e3a"
+            ]
+        ]
+    },
+    {
+        "id": "ffc04e41.918cf8",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT\n  DATA_ID,\n  COLLECTION_QUESTION,\n  COLLECTION_ANSWER,\n  DISPLAY_ANSWER\nFROM (\nSELECT *,\n  ROWNUMBER() OVER (ORDER BY DATA_ID) AS ROWNUM\nFROM COLLECTION_DATA\nWHERE DELETE_FLAG = 0\n)\nWHERE ROWNUM BETWEEN ? AND ?;",
+        "params": "msg.param.from,msg.param.to",
+        "name": "COLLECTION_DATA",
+        "x": 1260,
+        "y": 700,
+        "wires": [
+            [
+                "ad65392f.6c3ce"
+            ]
+        ]
+    },
+    {
+        "id": "478413bf.4f0aec",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "Collection登録",
+        "info": "",
+        "x": 120,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "44dff856.d82ec",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "License",
+        "info": "/**\n * Copyright 2017 Nippon Information and Communication Corporation\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */",
+        "x": 90,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "307f70b0.04cf4",
+        "type": "watson-discovery-v1",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "environmentname": "",
+        "environment_id": "",
+        "collection_id": "",
+        "configurationname": "",
+        "configuration_id": "",
+        "language_code": "ja",
+        "collection_name": "",
+        "count": "1",
+        "passages": true,
+        "nlp_query": true,
+        "query": "",
+        "filter": "",
+        "aggregation": "",
+        "return": "",
+        "description": "",
+        "size": 0,
+        "discovery-method": "createCollection",
+        "default-endpoint": true,
+        "service-endpoint": "https://gateway.watsonplatform.net/discovery/api",
+        "x": 1040,
+        "y": 440,
+        "wires": [
+            [
+                "37d4b5f7.591142"
+            ]
+        ]
+    },
+    {
+        "id": "af82e9bc.7e512",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "Discovery情報",
+        "func": "//msg.discoveryparams = global.get(\"const.discovery\");\n\nmsg.discoveryparams = {\n    environment_id : global.get(\"const.discovery.environment_id\"),\n    configuration_id : global.get(\"const.discovery.configuration_id\"),\n    collection_name : \"Collection-\" + Math.floor( Math.random() * 1000000000000 ),\n    language_code : \"ja\",\n    version : global.get(\"const.discovery.version\")\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 820,
+        "y": 440,
+        "wires": [
+            [
+                "307f70b0.04cf4"
+            ]
+        ]
+    },
+    {
+        "id": "37d4b5f7.591142",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "INSERT INTO COLLECTION (COLLECTION_ID,  ENVIRONMENT_ID,  VERSION,  REMARK,INSERT_USER)\nVALUES(?,?,?,?,?)",
+        "params": "msg.collection.collection_id,msg.discoveryparams.environment_id,msg.discoveryparams.version,msg.data.remark,msg.session.user_id",
+        "name": "COLLECTION",
+        "x": 1280,
+        "y": 440,
+        "wires": [
+            [
+                "f58aaccc.fb9448",
+                "94d46200.fde0e8"
+            ]
+        ]
+    },
+    {
+        "id": "f58aaccc.fb9448",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "同時処理件数設定",
+        "func": "msg.start = 1;\nmsg.limit = 5;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 830,
+        "y": 540,
+        "wires": [
+            [
+                "5322c742.27dfb8"
+            ]
+        ]
+    },
+    {
+        "id": "5322c742.27dfb8",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "取得範囲",
+        "func": "var next = msg.start + msg.limit;\n\nmsg.param = {\n  \"from\" : msg.start,\n  \"to\" : next-1\n};\n\nmsg.start = next;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1040,
+        "y": 700,
+        "wires": [
+            [
+                "ffc04e41.918cf8"
+            ]
+        ]
+    },
+    {
+        "id": "ad65392f.6c3ce",
+        "type": "switch",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "property": "$count(payload)",
+        "propertyType": "jsonata",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1430,
+        "y": 700,
+        "wires": [
+            [
+                "4ba06c03.b4b63c"
+            ],
+            [
+                "41250350.9ae87c"
+            ]
+        ]
+    },
+    {
+        "id": "41250350.9ae87c",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "UPDATE COLLECTION\nSET STATUS = 2,UPDATE_USER=?,\nUPDATE_TIME=CURRENT TIMESTAMP\nWHERE COLLECTION_ID = ?",
+        "params": "msg.session.user_id,msg.collection.collection_id",
+        "name": "COLLECTION",
+        "x": 1680,
+        "y": 720,
+        "wires": [
+            [
+                "2d2b1e56.74c402",
+                "8fdbdc52.efb698"
+            ]
+        ]
+    },
+    {
+        "id": "12c21d0a.d8b9fb",
+        "type": "http in",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "url": "/api/v1/discovery",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "ec755a70.cc3858"
+            ]
+        ]
+    },
+    {
+        "id": "ec755a70.cc3858",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "x": 410,
+        "y": 140,
+        "wires": [
+            [
+                "65b909f8.7c441",
+                "809dced1.9cd8d8"
+            ]
+        ]
+    },
+    {
+        "id": "65b909f8.7c441",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 590,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "809dced1.9cd8d8",
+        "type": "switch",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "property": "data.p",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 590,
+        "y": 140,
+        "wires": [
+            [
+                "1f5a7091.00210f"
+            ],
+            [
+                "378f49a5.9b138e"
+            ]
+        ]
+    },
+    {
+        "id": "1f5a7091.00210f",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT \nCOLLECTION_ID,STATUS,REMARK,VARCHAR_FORMAT(insert_time + 9 HOURS,'YYYY-MM-DD HH24:MI:SS') AS INSERT_TIME FROM COLLECTION\nWHERE DELETE_FLAG = 0\nORDER BY INSERT_TIME DESC;",
+        "params": "",
+        "name": "COLLECTION",
+        "x": 820,
+        "y": 120,
+        "wires": [
+            [
+                "e0f9ad6a.6da76"
+            ]
+        ]
+    },
+    {
+        "id": "378f49a5.9b138e",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "取得範囲設定",
+        "func": "var limit = msg.data.l || 10;\nvar page = msg.data.p || 1;\n\nif(isNaN(limit) || isNaN(page)){\n    msg.param = null;\n}else{\n    // 1+(limit * (page - 1))~ limit*p\n    msg.param = {\n        from : limit * (page-1) + 1,\n        to : limit * page\n    };\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 820,
+        "y": 160,
+        "wires": [
+            [
+                "16d0393d.08878f"
+            ]
+        ]
+    },
+    {
+        "id": "e0f9ad6a.6da76",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "3aa3a633.249fd2",
+        "x": 1100,
+        "y": 120,
+        "wires": [
+            [
+                "a65f2ab2.7cb938"
+            ]
+        ]
+    },
+    {
+        "id": "16d0393d.08878f",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT COUNT(*) AS TOTAL\nFROM COLLECTION\nWHERE DELETE_FLAG = 0;",
+        "params": "",
+        "name": "COUNT COLLECTION",
+        "x": 840,
+        "y": 200,
+        "wires": [
+            [
+                "c75be6cf.a3e168"
+            ]
+        ]
+    },
+    {
+        "id": "a65f2ab2.7cb938",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "レスポンス整形",
+        "func": "function format(data){\n    var formatted = {};\n    for(var key in data){\n        formatted[key.toLowerCase()] = data[key];\n    }\n    return formatted;\n}\nvar data = [];\n\nif(!Array.isArray(msg.payload)){\n    data.push(format(msg.payload));\n}else{\n    for(i=0; i < msg.payload.length; i++){\n        data.push(format(msg.payload[i]));\n    }\n}\nmsg.payload = data;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 120,
+        "wires": [
+            [
+                "58a3b008.9fb988"
+            ]
+        ]
+    },
+    {
+        "id": "c75be6cf.a3e168",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "3aa3a633.249fd2",
+        "x": 1100,
+        "y": 200,
+        "wires": [
+            [
+                "f9461dcd.2d214"
+            ]
+        ]
+    },
+    {
+        "id": "58a3b008.9fb988",
+        "type": "http response",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1610,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "f9461dcd.2d214",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "レスポンス設定",
+        "func": "msg.count = msg.payload.TOTAL;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 200,
+        "wires": [
+            [
+                "628d5628.dedac8"
+            ]
+        ]
+    },
+    {
+        "id": "7180f8d7.3f07d8",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "レスポンス整形",
+        "func": "function format(data){\n    var formatted = {};\n    for(var key in data){\n        formatted[key.toLowerCase()] = data[key];\n    }\n    return formatted;\n}\nvar data = [];\n\nif(!Array.isArray(msg.payload)){\n    data.push(format(msg.payload));\n}else{\n    for(i=0; i < msg.payload.length; i++){\n        data.push(format(msg.payload[i]));\n    }\n}\nmsg.payload = {\n    count : msg.count,\n    result : data\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 240,
+        "wires": [
+            [
+                "58a3b008.9fb988"
+            ]
+        ]
+    },
+    {
+        "id": "628d5628.dedac8",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT\n  COLLECTION_ID,STATUS,REMARK,\n  VARCHAR_FORMAT(insert_time + 9 HOURS,'YYYY-MM-DD HH24:MI:SS')\nFROM\n  (\n    SELECT\n      *,\n      ROWNUMBER() OVER (ORDER BY INSERT_TIME DESC) AS rownum\n    FROM\n      COLLECTION\n    WHERE\n      DELETE_FLAG = 0\n  ) AS tbl\nWHERE\n  rownum BETWEEN ? AND ?\nORDER BY\n  rownum\n;",
+        "params": "msg.param.from,msg.param.to",
+        "name": "COLLECTION",
+        "x": 820,
+        "y": 240,
+        "wires": [
+            [
+                "63dc49d0.c40898"
+            ]
+        ]
+    },
+    {
+        "id": "63dc49d0.c40898",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "3aa3a633.249fd2",
+        "x": 1100,
+        "y": 240,
+        "wires": [
+            [
+                "7180f8d7.3f07d8"
+            ]
+        ]
+    },
+    {
+        "id": "daa13ffc.bbceb8",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "Collection一覧取得",
+        "info": "",
+        "x": 130,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "2d2b1e56.74c402",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 1910,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "d5a8f5c5.f78b88",
+        "type": "http in",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "url": "/api/v1/discovery/change",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 1080,
+        "wires": [
+            [
+                "7577b12e.566b28"
+            ]
+        ]
+    },
+    {
+        "id": "7577b12e.566b28",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "3aa3a633.249fd2",
+        "x": 410,
+        "y": 1080,
+        "wires": [
+            [
+                "29b0d436.0137c4",
+                "1ae411eb.08f72e"
+            ]
+        ]
+    },
+    {
+        "id": "29b0d436.0137c4",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "UPDATE COLLECTION\nSET STATUS=1, UPDATE_USER=?, UPDATE_TIME=CURRENT TIMESTAMP\nWHERE COLLECTION_ID=?;",
+        "params": "msg.session.user_id,msg.data.id",
+        "name": "COLLECTION",
+        "x": 820,
+        "y": 1080,
+        "wires": [
+            [
+                "455df7a7.5846c8"
+            ]
+        ]
+    },
+    {
+        "id": "1ae411eb.08f72e",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 590,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "455df7a7.5846c8",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "x": 1100,
+        "y": 1080,
+        "wires": [
+            [
+                "36eebb2a.ecf6cc"
+            ]
+        ]
+    },
+    {
+        "id": "36eebb2a.ecf6cc",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "UPDATE COLLECTION\nSET STATUS=2, UPDATE_USER=?, UPDATE_TIME=CURRENT TIMESTAMP\nWHERE COLLECTION_ID <> ?\nAND STATUS=1;",
+        "params": "msg.session.user_id,msg.data.id",
+        "name": "COLLECTION",
+        "x": 820,
+        "y": 1140,
+        "wires": [
+            [
+                "36c4342a.7ed09c"
+            ]
+        ]
+    },
+    {
+        "id": "36c4342a.7ed09c",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "x": 1100,
+        "y": 1140,
+        "wires": [
+            [
+                "87948b77.f7ad28"
+            ]
+        ]
+    },
+    {
+        "id": "87948b77.f7ad28",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "メッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"処理完了\",\n    \"message\" : \"コレクションを切り替えました\"\n};\nmsg.statusCode=200;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 1140,
+        "wires": [
+            [
+                "3c81cfdc.f46ed8"
+            ]
+        ]
+    },
+    {
+        "id": "3c81cfdc.f46ed8",
+        "type": "http response",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1610,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "e9b381eb.f583b",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "Collection切り替え",
+        "info": "",
+        "x": 130,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "d6ae4c58.a87e",
+        "type": "http in",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "url": "/api/v1/discovery",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 420,
+        "wires": [
+            [
+                "2f1b9340.e1b2f4"
+            ]
+        ]
+    },
+    {
+        "id": "2f1b9340.e1b2f4",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "3aa3a633.249fd2",
+        "x": 410,
+        "y": 420,
+        "wires": [
+            [
+                "1c5fe64.4aeba1a",
+                "1cc6257a.b7b3a3"
+            ]
+        ]
+    },
+    {
+        "id": "1c5fe64.4aeba1a",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 590,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "94d46200.fde0e8",
+        "type": "change",
+        "z": "3aa3a633.249fd2",
+        "name": "フラグ設定(true)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "creatingFlag",
+                "pt": "flow",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 420,
+        "wires": [
+            [
+                "5144d4d0.7973e4"
+            ]
+        ]
+    },
+    {
+        "id": "5144d4d0.7973e4",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "メッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"処理受付\",\n    \"message\" : \"作成処理を受け付けました。作成までに時間がかかる可能性がありますので、一覧で状況を確認してください。\"\n};\nmsg.statusCode = 202;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1740,
+        "y": 420,
+        "wires": [
+            [
+                "bcd7f22d.4811"
+            ]
+        ]
+    },
+    {
+        "id": "bcd7f22d.4811",
+        "type": "http response",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1970,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "8fdbdc52.efb698",
+        "type": "change",
+        "z": "3aa3a633.249fd2",
+        "name": "フラグ設定(false)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "creatingFlag",
+                "pt": "flow",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1930,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1cc6257a.b7b3a3",
+        "type": "switch",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "property": "creatingFlag",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 590,
+        "y": 420,
+        "wires": [
+            [
+                "1513531c.52a36d"
+            ],
+            [
+                "af82e9bc.7e512"
+            ]
+        ]
+    },
+    {
+        "id": "1513531c.52a36d",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "メッセージ設定",
+        "func": "msg.payload = {\n    \"title\" : \"エラー\",\n    \"message\" : \"既に作成中のため、他の処理完了後に再度実行してください。\"\n};\nmsg.statusCode = 423;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 820,
+        "y": 380,
+        "wires": [
+            [
+                "6d946d8.6797394"
+            ]
+        ]
+    },
+    {
+        "id": "6d946d8.6797394",
+        "type": "http response",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1010,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "f2ec831d.be86b",
+        "type": "http in",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "url": "/api/v1/discovery/:id",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 860,
+        "wires": [
+            [
+                "7e61e836.e5d2"
+            ]
+        ]
+    },
+    {
+        "id": "7e61e836.e5d2",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "x": 410,
+        "y": 860,
+        "wires": [
+            [
+                "a93d8b3.2eb4278",
+                "a581b139.703d4"
+            ]
+        ]
+    },
+    {
+        "id": "a93d8b3.2eb4278",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "UPDATE COLLECTION\nSET DELETE_FLAG=1, UPDATE_USER=?, UPDATE_TIME=CURRENT TIMESTAMP\nWHERE COLLECTION_ID=?;",
+        "params": "msg.session.user_id,msg.data.id",
+        "name": "COLLECTION",
+        "x": 820,
+        "y": 860,
+        "wires": [
+            [
+                "6928caca.ba26f4"
+            ]
+        ]
+    },
+    {
+        "id": "a581b139.703d4",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 590,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "1486497.1693cb7",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "メッセージ設定",
+        "func": "msg.payload = {\n    \"title\" : \"処理完了\",\n    \"message\" : \"削除しました\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 980,
+        "wires": [
+            [
+                "6d7d7822.4cb1f"
+            ]
+        ]
+    },
+    {
+        "id": "6d7d7822.4cb1f",
+        "type": "http response",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1610,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "b86b4991.d6156",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "Collection削除",
+        "info": "",
+        "x": 120,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "cfe77e4a.6ef828",
+        "type": "watson-discovery-v1",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "environmentname": "",
+        "environment_id": "",
+        "collection_id": "",
+        "configurationname": "",
+        "configuration_id": "",
+        "language_code": "en",
+        "collection_name": "",
+        "count": "1",
+        "passages": true,
+        "nlp_query": true,
+        "query": "",
+        "filter": "",
+        "aggregation": "",
+        "return": "",
+        "description": "",
+        "size": 0,
+        "discovery-method": "deleteCollection",
+        "default-endpoint": true,
+        "service-endpoint": "https://gateway.watsonplatform.net/discovery/api",
+        "x": 1080,
+        "y": 980,
+        "wires": [
+            [
+                "1486497.1693cb7"
+            ]
+        ]
+    },
+    {
+        "id": "60e5c36d.607abc",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "Discovery情報",
+        "func": "msg.discoveryparams = {\n    environment_id : msg.payload.ENVIRONMENT_ID,\n    collection_id : msg.payload.COLLECTION_ID\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 820,
+        "y": 980,
+        "wires": [
+            [
+                "cfe77e4a.6ef828"
+            ]
+        ]
+    },
+    {
+        "id": "94a108a6.421ab8",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT * FROM COLLECTION\nWHERE COLLECTION_ID=?;",
+        "params": "msg.data.id",
+        "name": "COLLECTION",
+        "x": 820,
+        "y": 920,
+        "wires": [
+            [
+                "649001d4.7aa64"
+            ]
+        ]
+    },
+    {
+        "id": "6928caca.ba26f4",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "x": 1100,
+        "y": 860,
+        "wires": [
+            [
+                "94a108a6.421ab8"
+            ]
+        ]
+    },
+    {
+        "id": "649001d4.7aa64",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "x": 1100,
+        "y": 920,
+        "wires": [
+            [
+                "60e5c36d.607abc"
+            ]
+        ]
+    },
+    {
+        "id": "9956d763.463a3",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT * FROM COLLECTION\nWHERE COLLECTION_ID = ?;",
+        "params": "msg.data.id",
+        "name": "COLLECTION",
+        "x": 820,
+        "y": 1320,
+        "wires": [
+            [
+                "d7656fea.d0e528"
+            ]
+        ]
+    },
+    {
+        "id": "8a4e6af0.3497f",
+        "type": "change",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "collection",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1350,
+        "y": 1320,
+        "wires": [
+            [
+                "6900c19a.54a73",
+                "7f61a312.a37a5c"
+            ]
+        ]
+    },
+    {
+        "id": "7f61a312.a37a5c",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 1550,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "ac431a43.fcf848",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "接続情報",
+        "func": "var environment_id = msg.collection.ENVIRONMENT_ID;\nvar collection_id = msg.collection.COLLECTION_ID;\nvar version = msg.collection.VERSION;\n\nmsg.url = \"https://gateway.watsonplatform.net/discovery/api/v1/environments/\"+environment_id+\"/collections/\"+collection_id+\"/training_data?version=\"+version;\nmsg.method = \"DELETE\";\nmsg.headers = {\n    \"Authorization\": \"Basic \" + new Buffer(global.get(\"const.discovery.user\") + \":\" + global.get(\"const.discovery.password\")).toString('base64'),\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 800,
+        "y": 1520,
+        "wires": [
+            [
+                "6a9ba2b3.6f577c"
+            ]
+        ]
+    },
+    {
+        "id": "6a9ba2b3.6f577c",
+        "type": "http request",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 1090,
+        "y": 1520,
+        "wires": [
+            [
+                "facbeba5.c0d0a8"
+            ]
+        ]
+    },
+    {
+        "id": "facbeba5.c0d0a8",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "同時処理件数設定",
+        "func": "msg.start = 1;\nmsg.limit = 5;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 830,
+        "y": 1640,
+        "wires": [
+            [
+                "69b79d18.54d1cc"
+            ]
+        ]
+    },
+    {
+        "id": "69b79d18.54d1cc",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "取得範囲",
+        "func": "var next = msg.start + msg.limit;\n\nmsg.param = {\n  \"from\" : msg.start,\n  \"to\" : next-1\n};\n\nmsg.start = next;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 800,
+        "y": 1760,
+        "wires": [
+            [
+                "2aa76d20.4dba6a"
+            ]
+        ]
+    },
+    {
+        "id": "207c3b00.64e0a6",
+        "type": "switch",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "property": "count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "maxCount",
+                "vt": "msg"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1510,
+        "y": 1700,
+        "wires": [
+            [
+                "ffdb3680.d5ba98"
+            ],
+            [
+                "646ba368.08ad6c",
+                "69b79d18.54d1cc"
+            ]
+        ]
+    },
+    {
+        "id": "2aa76d20.4dba6a",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT * FROM\n(\nSELECT QUERY_ID, QUERY, LISTAGG(DATA_ID || ':' || RELEVANCE,'<>') AS DATAs, ROWNUMBER() OVER (ORDER BY QUERY_ID) AS ROWNUM\nFROM\n(\nSELECT Q.QUERY_ID,Q.QUERY,R.DATA_ID,R.RELEVANCE\nFROM TRAINING_QUERY Q,TRAINING_RELEVANCE R\nWHERE Q.QUERY_ID = R.QUERY_ID\nAND   Q.DELETE_FLAG = 0\n)\nGROUP BY QUERY_ID, QUERY\n)\nWHERE ROWNUM BETWEEN ? AND ?",
+        "params": "msg.param.from,msg.param.to",
+        "name": "TRAINING_QUERY/RELEVANCE",
+        "x": 1160,
+        "y": 1760,
+        "wires": [
+            [
+                "adcfff4a.1afd68"
+            ]
+        ]
+    },
+    {
+        "id": "ffdb3680.d5ba98",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "データ設定",
+        "func": "var data = msg.training[msg.count++];\nvar examples = [];\n\nvar datas = data.DATAS.split(\"<>\");\nfor(var i=0; i<datas.length; i++){\n    var d = datas[i].split(\":\");\n    \n    var item = {\n        document_id : d[0],\n        relevance : d[1]\n    };\n    examples.push(item);\n}\n\nmsg.payload = {\n    natural_language_query : data.QUERY,\n    examples : examples\n};\nmsg.query_id = data.QUERY_ID;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 1640,
+        "wires": [
+            [
+                "14279775.116939"
+            ]
+        ]
+    },
+    {
+        "id": "646ba368.08ad6c",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1850,
+        "y": 1700,
+        "wires": []
+    },
+    {
+        "id": "1e6c3dcd.8af412",
+        "type": "http request",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "url": "",
+        "tls": "",
+        "x": 1670,
+        "y": 1640,
+        "wires": [
+            [
+                "7ae18970.038d3",
+                "207c3b00.64e0a6"
+            ]
+        ]
+    },
+    {
+        "id": "adcfff4a.1afd68",
+        "type": "switch",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "property": "$count(payload)",
+        "propertyType": "jsonata",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1410,
+        "y": 1760,
+        "wires": [
+            [
+                "b0c24d39.5c55d"
+            ],
+            [
+                "918ad83e.97d83",
+                "dfc0a378.17289"
+            ]
+        ]
+    },
+    {
+        "id": "b0c24d39.5c55d",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "変数初期化",
+        "func": "msg.training = msg.payload;\nmsg.count = 0;\nmsg.maxCount = msg.training.length;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1090,
+        "y": 1640,
+        "wires": [
+            [
+                "ffdb3680.d5ba98"
+            ]
+        ]
+    },
+    {
+        "id": "14279775.116939",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "接続情報",
+        "func": "//var environment_id = \"e997e64e-4e0d-4b08-9585-02e415cac86a\";\n//var collection_id = \"aba44f34-5137-4b15-8c7e-ecf181545c78\";\nvar environment_id = msg.collection.ENVIRONMENT_ID;\nvar collection_id = msg.collection.COLLECTION_ID;\nvar version = msg.collection.VERSION;\n\nmsg.url = \"https://gateway.watsonplatform.net/discovery/api/v1/environments/\"+environment_id+\"/collections/\"+collection_id+\"/training_data?version=\"+version;\nmsg.method = \"POST\";\nmsg.headers = {\n    \"Authorization\": \"Basic \" + new Buffer(global.get(\"const.discovery.user\") + \":\" + global.get(\"const.discovery.password\")).toString('base64'),\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1500,
+        "y": 1640,
+        "wires": [
+            [
+                "1e6c3dcd.8af412"
+            ]
+        ]
+    },
+    {
+        "id": "7ae18970.038d3",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 1870,
+        "y": 1640,
+        "wires": []
+    },
+    {
+        "id": "918ad83e.97d83",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "false",
+        "x": 1630,
+        "y": 1740,
+        "wires": []
+    },
+    {
+        "id": "39127f96.3b1fa8",
+        "type": "http in",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "url": "/api/v1/discovery/training",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 1300,
+        "wires": [
+            [
+                "bdcacd6b.0d7fc8"
+            ]
+        ]
+    },
+    {
+        "id": "c0c43026.301e98",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "学習データ反映",
+        "info": "",
+        "x": 120,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "bdcacd6b.0d7fc8",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "3aa3a633.249fd2",
+        "x": 410,
+        "y": 1300,
+        "wires": [
+            [
+                "213345ad.e8f802",
+                "319e2556.94c2c2"
+            ]
+        ]
+    },
+    {
+        "id": "213345ad.e8f802",
+        "type": "debug",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 590,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "d7656fea.d0e528",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "x": 1100,
+        "y": 1320,
+        "wires": [
+            [
+                "8a4e6af0.3497f"
+            ]
+        ]
+    },
+    {
+        "id": "e0fe6032.422678",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "メッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"処理受付\",\n    \"message\" : \"学習処理を受け付けました。学習完了までに時間がかかりますので、一覧で状況を確認してください。\"\n};\nmsg.statusCode=202;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1580,
+        "y": 1420,
+        "wires": [
+            [
+                "ed04746.e240588"
+            ]
+        ]
+    },
+    {
+        "id": "ed04746.e240588",
+        "type": "http response",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1850,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "319e2556.94c2c2",
+        "type": "switch",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "property": "trainingFlag",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 590,
+        "y": 1300,
+        "wires": [
+            [
+                "60b5551.a30cc2c"
+            ],
+            [
+                "9956d763.463a3"
+            ]
+        ]
+    },
+    {
+        "id": "60b5551.a30cc2c",
+        "type": "function",
+        "z": "3aa3a633.249fd2",
+        "name": "メッセージ設定",
+        "func": "msg.payload = {\n    \"title\" : \"エラー\",\n    \"message\" : \"既に作成中のため、他の処理完了後に再度実行してください。\"\n};\nmsg.statusCode = 423;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 820,
+        "y": 1260,
+        "wires": [
+            [
+                "cbaef39f.064308"
+            ]
+        ]
+    },
+    {
+        "id": "cbaef39f.064308",
+        "type": "http response",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1010,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "6900c19a.54a73",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "UPDATE COLLECTION\nSET STATUS = 3,UPDATE_USER=?,\nUPDATE_TIME=CURRENT TIMESTAMP\nWHERE COLLECTION_ID = ?",
+        "params": "msg.session.user_id,msg.collection.COLLECTION_ID",
+        "name": "COLLECTION",
+        "x": 820,
+        "y": 1420,
+        "wires": [
+            [
+                "b08b3ff6.19d568"
+            ]
+        ]
+    },
+    {
+        "id": "f9b1b172.64eb78",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "フラグ更新",
+        "info": "",
+        "x": 800,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "b08b3ff6.19d568",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "3aa3a633.249fd2",
+        "name": "",
+        "x": 1100,
+        "y": 1420,
+        "wires": [
+            [
+                "ac431a43.fcf848",
+                "a9c4404a.d5cf88"
+            ]
+        ]
+    },
+    {
+        "id": "d5022849.f1e0f",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "レスポンス（処理受付済）",
+        "info": "",
+        "x": 1610,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "49523829.4e675",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "学習データ全件削除",
+        "info": "",
+        "x": 830,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "ddcfaf49.8c9308",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "学習処理",
+        "info": "",
+        "x": 800,
+        "y": 1580,
+        "wires": []
+    },
+    {
+        "id": "cbbe6b13.8113d",
+        "type": "comment",
+        "z": "3aa3a633.249fd2",
+        "name": "フラグ更新",
+        "info": "",
+        "x": 1660,
+        "y": 1780,
+        "wires": []
+    },
+    {
+        "id": "dfc0a378.17289",
+        "type": "dashDB in",
+        "z": "3aa3a633.249fd2",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "UPDATE COLLECTION\nSET STATUS = 2,UPDATE_USER=?,\nUPDATE_TIME=CURRENT TIMESTAMP\nWHERE COLLECTION_ID = ?",
+        "params": "msg.session.user_id,msg.collection.COLLECTION_ID",
+        "name": "COLLECTION",
+        "x": 1680,
+        "y": 1820,
+        "wires": [
+            [
+                "97d33f5a.c77598"
+            ]
+        ]
+    },
+    {
+        "id": "a9c4404a.d5cf88",
+        "type": "change",
+        "z": "3aa3a633.249fd2",
+        "name": "フラグ設定(true)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "trainingFlag",
+                "pt": "flow",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 1420,
+        "wires": [
+            [
+                "e0fe6032.422678"
+            ]
+        ]
+    },
+    {
+        "id": "97d33f5a.c77598",
+        "type": "change",
+        "z": "3aa3a633.249fd2",
+        "name": "フラグ設定(false)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "trainingFlag",
+                "pt": "flow",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1890,
+        "y": 1820,
+        "wires": [
+            []
+        ]
+    }
+]

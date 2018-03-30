@@ -1,0 +1,647 @@
+[
+    {
+        "id": "dd6e6fd8.b14ff8",
+        "type": "subflow",
+        "name": "API開始処理",
+        "info": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "3bd4f8b3.438518"
+                    },
+                    {
+                        "id": "4ef27a00.f120cc"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1680,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "632c1cdd.be3f44",
+                        "port": 0
+                    },
+                    {
+                        "id": "11aa04fc.b0ab7b",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "e9b4e2b1.da6d98",
+        "type": "template",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "エラーレスポンス",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{\n    \"result\" : false,\n    \"errorMessage\" : \"システム認証に失敗しました。\"\n}",
+        "output": "json",
+        "x": 530,
+        "y": 200,
+        "wires": [
+            [
+                "134bbd93.0c2c1a"
+            ]
+        ]
+    },
+    {
+        "id": "134bbd93.0c2c1a",
+        "type": "http response",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "7412a61.a29ac58",
+        "type": "switch",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "SECURE_IDのチェック",
+        "property": "req.headers.x-secure-id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "const.secure_id",
+                "vt": "global"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 250,
+        "y": 140,
+        "wires": [
+            [
+                "4ef27a00.f120cc"
+            ],
+            [
+                "e9b4e2b1.da6d98"
+            ]
+        ]
+    },
+    {
+        "id": "3bd4f8b3.438518",
+        "type": "debug",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "URL",
+        "active": true,
+        "console": "true",
+        "complete": "req.url",
+        "x": 190,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "4ef27a00.f120cc",
+        "type": "change",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "body",
+        "rules": [
+            {
+                "t": "set",
+                "p": "data",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 100,
+        "wires": [
+            [
+                "f92607f0.477528"
+            ]
+        ]
+    },
+    {
+        "id": "b19e643b.4cd22",
+        "type": "dashDB in",
+        "z": "dd6e6fd8.b14ff8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT USER_ID FROM USER_SESSION WHERE SESSION_ID = ?;",
+        "params": "msg.session.session_id",
+        "name": "ユーザID取得",
+        "x": 1210,
+        "y": 80,
+        "wires": [
+            [
+                "632c1cdd.be3f44"
+            ]
+        ]
+    },
+    {
+        "id": "632c1cdd.be3f44",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "ユーザID設定",
+        "func": "if(msg.payload.USER_ID){\n    msg.session.user_id = msg.payload.USER_ID;\n}else{\n    msg.session.user_id = null;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1410,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "22028101.8c422e",
+        "type": "switch",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "",
+        "property": "session.session_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1010,
+        "y": 100,
+        "wires": [
+            [
+                "b19e643b.4cd22"
+            ],
+            [
+                "11aa04fc.b0ab7b"
+            ]
+        ]
+    },
+    {
+        "id": "efdd9e5.bd5236",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "Requestをdataに移動",
+        "info": "",
+        "x": 540,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "9c473405.0b9368",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セキュリティチェック",
+        "info": "",
+        "x": 240,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "b06d17bf.0c5f4",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "Sessionが存在する場合ユーザIDを設定",
+        "info": "",
+        "x": 1290,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "11aa04fc.b0ab7b",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "ユーザID設定",
+        "func": "msg.session.user_id = null;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1410,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "72a02c4f.7839ac",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セキュリティエラー",
+        "info": "",
+        "x": 530,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "103dece9.591cc3",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セッション",
+        "func": "var id = msg.req.headers[\"x-session-id\"];\nmsg.session = {};\nif(id){\n    msg.session.session_id = id;  \n}\n\n// ログ出力\nnode.log(JSON.stringify(msg.session));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 830,
+        "y": 100,
+        "wires": [
+            [
+                "22028101.8c422e"
+            ]
+        ]
+    },
+    {
+        "id": "f92607f0.477528",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "リクエスト",
+        "func": "if(msg.data === \"\"){\n    msg.data = {};\n}\nfor(var key in msg.req.params){\n    msg.data[key] = msg.req.params[key];\n}\n\n//ログ出力\nnode.log(JSON.stringify(msg.data));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 650,
+        "y": 100,
+        "wires": [
+            [
+                "103dece9.591cc3"
+            ]
+        ]
+    },
+    {
+        "id": "cbf8bd26.d4b31",
+        "type": "tab",
+        "label": "Common",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "8812b7e4.a3e0e8",
+        "type": "http in",
+        "z": "cbf8bd26.d4b31",
+        "name": "",
+        "url": "/api/v1/auth",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 320,
+        "wires": [
+            [
+                "e8f6e79a.bceff",
+                "de41004e.804ed8"
+            ]
+        ]
+    },
+    {
+        "id": "885bcc51.836dc",
+        "type": "http response",
+        "z": "cbf8bd26.d4b31",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1830,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "1ccbe21.75b769e",
+        "type": "comment",
+        "z": "cbf8bd26.d4b31",
+        "name": "認証処理",
+        "info": "",
+        "x": 100,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "20756971.e7dee6",
+        "type": "function",
+        "z": "cbf8bd26.d4b31",
+        "name": "ID生成",
+        "func": "var id = \"\", i, random;\nfor (i = 0; i < 32; i++) {\nrandom = Math.random() * 16 | 0;\n/*\nif (i == 8 || i == 12 || i == 16 || i == 20) {\n  id += \"-\";\n}\n*/\nid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);\n}\nmsg.sid = id;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1430,
+        "y": 300,
+        "wires": [
+            [
+                "a09fc069.5e8b28",
+                "c1968a66.74af1"
+            ]
+        ]
+    },
+    {
+        "id": "a09fc069.5e8b28",
+        "type": "template",
+        "z": "cbf8bd26.d4b31",
+        "name": "レスポンス生成",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n    \"result\" : true,\n    \"user_id\" : \"{{payload.USER_ID}}\",\n    \"session_id\" : \"{{sid}}\"\n}",
+        "output": "json",
+        "x": 1640,
+        "y": 300,
+        "wires": [
+            [
+                "885bcc51.836dc"
+            ]
+        ]
+    },
+    {
+        "id": "38622eeb.c93532",
+        "type": "switch",
+        "z": "cbf8bd26.d4b31",
+        "name": "",
+        "property": "result",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1270,
+        "y": 320,
+        "wires": [
+            [
+                "20756971.e7dee6"
+            ],
+            [
+                "1524f940.481ca7"
+            ]
+        ]
+    },
+    {
+        "id": "32a51237.5cc4ae",
+        "type": "dashDB in",
+        "z": "cbf8bd26.d4b31",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT USER_ID, USER_NAME, USER_PASSWORD, hex(hash(?, 2)) AS INPUT_PASSWORD FROM USER_MASTER WHERE USER_ID = ?\nAND ADMIN_FLAG = 1;",
+        "params": "msg.data.passwd,msg.data.userid",
+        "name": "認証情報取得",
+        "x": 840,
+        "y": 320,
+        "wires": [
+            [
+                "465522b1.755f9c"
+            ]
+        ]
+    },
+    {
+        "id": "465522b1.755f9c",
+        "type": "function",
+        "z": "cbf8bd26.d4b31",
+        "name": "パスワードチェック",
+        "func": "var result = false;\nif(msg.payload.length !== 0){\n    if(msg.payload.USER_PASSWORD == msg.payload.INPUT_PASSWORD){\n        result = true;\n    }\n}\nmsg.result = result;\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1060,
+        "y": 320,
+        "wires": [
+            [
+                "38622eeb.c93532",
+                "ccb3d28a.3001b"
+            ]
+        ]
+    },
+    {
+        "id": "ccb3d28a.3001b",
+        "type": "debug",
+        "z": "cbf8bd26.d4b31",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1270,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "4672cab.01edab4",
+        "type": "dashDB in",
+        "z": "cbf8bd26.d4b31",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "INSERT INTO USER_SESSION(SESSION_ID,USER_ID) VALUES (?,?);",
+        "params": "msg.payload.session_id,msg.payload.user_id",
+        "name": "USER_SESSION",
+        "x": 1870,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c1968a66.74af1",
+        "type": "function",
+        "z": "cbf8bd26.d4b31",
+        "name": "レコード生成",
+        "func": "var payload = {\n    \"session_id\" : msg.sid,\n    \"user_id\": msg.payload.USER_ID\n};\nmsg.payload = payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1640,
+        "y": 260,
+        "wires": [
+            [
+                "4672cab.01edab4",
+                "98cecc63.f64a18"
+            ]
+        ]
+    },
+    {
+        "id": "e8f6e79a.bceff",
+        "type": "debug",
+        "z": "cbf8bd26.d4b31",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 310,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "1524f940.481ca7",
+        "type": "template",
+        "z": "cbf8bd26.d4b31",
+        "name": "レスポンス生成",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n    \"result\" : false,\n    \"errorMessage\" : \"認証情報に誤りがあります\"\n}",
+        "output": "json",
+        "x": 1640,
+        "y": 340,
+        "wires": [
+            [
+                "885bcc51.836dc"
+            ]
+        ]
+    },
+    {
+        "id": "de41004e.804ed8",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "cbf8bd26.d4b31",
+        "name": "",
+        "x": 330,
+        "y": 320,
+        "wires": [
+            [
+                "982f193a.8d1bf8"
+            ]
+        ]
+    },
+    {
+        "id": "982f193a.8d1bf8",
+        "type": "function",
+        "z": "cbf8bd26.d4b31",
+        "name": "入力情報移動",
+        "func": "msg.data = msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 560,
+        "y": 320,
+        "wires": [
+            [
+                "32a51237.5cc4ae"
+            ]
+        ]
+    },
+    {
+        "id": "98cecc63.f64a18",
+        "type": "debug",
+        "z": "cbf8bd26.d4b31",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1830,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "da2dfd98.ce623",
+        "type": "comment",
+        "z": "cbf8bd26.d4b31",
+        "name": "License",
+        "info": "/**\n * Copyright 2017 Nippon Information and Communication Corporation\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */",
+        "x": 90,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "ba04feb2.46dda",
+        "type": "inject",
+        "z": "cbf8bd26.d4b31",
+        "name": "起動時",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "x": 120,
+        "y": 160,
+        "wires": [
+            [
+                "cd969e15.8dc118"
+            ]
+        ]
+    },
+    {
+        "id": "cd969e15.8dc118",
+        "type": "template",
+        "z": "cbf8bd26.d4b31",
+        "name": "接続情報設定",
+        "field": "const",
+        "fieldType": "global",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{\n    \"secure_id\" : \"\",\n    \"discovery\" : {\n        \"url\" : \"https://gateway.watsonplatform.net/discovery/api/v1/\",\n        \"user\" : \"\",\n        \"password\" : \"\",\n        \"environment_id\" : \"\",\n        \"configuration_id\" : \"\",\n        \"language_code\" : \"ja\",\n        \"version\" : \"2017-10-16\"\n    }\n}\n",
+        "output": "json",
+        "x": 340,
+        "y": 160,
+        "wires": [
+            [
+                "1af646f6.afc439"
+            ]
+        ]
+    },
+    {
+        "id": "b0477355.bd556",
+        "type": "template",
+        "z": "cbf8bd26.d4b31",
+        "name": "ログMsg",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "plain",
+        "template": "設定しました。",
+        "output": "str",
+        "x": 740,
+        "y": 160,
+        "wires": [
+            [
+                "76bfb476.be0294"
+            ]
+        ]
+    },
+    {
+        "id": "76bfb476.be0294",
+        "type": "debug",
+        "z": "cbf8bd26.d4b31",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "payload",
+        "x": 930,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "1af646f6.afc439",
+        "type": "function",
+        "z": "cbf8bd26.d4b31",
+        "name": "共通関数",
+        "func": "var util = {\n    \n};\nglobal.set(\"util\",util);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 560,
+        "y": 160,
+        "wires": [
+            [
+                "b0477355.bd556"
+            ]
+        ]
+    },
+    {
+        "id": "b664a909.a29368",
+        "type": "comment",
+        "z": "cbf8bd26.d4b31",
+        "name": "環境設定",
+        "info": "",
+        "x": 100,
+        "y": 120,
+        "wires": []
+    }
+]

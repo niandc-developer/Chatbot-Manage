@@ -1,0 +1,1243 @@
+[
+    {
+        "id": "4350d699.efdaa8",
+        "type": "subflow",
+        "name": "DB Err Check",
+        "info": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "a866c856.f3659"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 440,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "a866c856.f3659",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "b70922af.4ea598",
+        "type": "function",
+        "z": "4350d699.efdaa8",
+        "name": "エラーメッセージ設定",
+        "func": "//異常終了\nmsg.payload = msg.error;\nmsg.statusCode=500;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 520,
+        "y": 100,
+        "wires": [
+            [
+                "aadbf4b0.a7e2f8"
+            ]
+        ]
+    },
+    {
+        "id": "aadbf4b0.a7e2f8",
+        "type": "http response",
+        "z": "4350d699.efdaa8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "a866c856.f3659",
+        "type": "switch",
+        "z": "4350d699.efdaa8",
+        "name": "エラー判定",
+        "property": "error",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 210,
+        "y": 60,
+        "wires": [
+            [],
+            [
+                "b70922af.4ea598",
+                "b33815c4.c5371"
+            ]
+        ]
+    },
+    {
+        "id": "b33815c4.c5371",
+        "type": "debug",
+        "z": "4350d699.efdaa8",
+        "name": "DB Error",
+        "active": true,
+        "console": "true",
+        "complete": "error",
+        "x": 490,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "dd6e6fd8.b14ff8",
+        "type": "subflow",
+        "name": "API開始処理",
+        "info": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "3bd4f8b3.438518"
+                    },
+                    {
+                        "id": "4ef27a00.f120cc"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1680,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "632c1cdd.be3f44",
+                        "port": 0
+                    },
+                    {
+                        "id": "11aa04fc.b0ab7b",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "e9b4e2b1.da6d98",
+        "type": "template",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "エラーレスポンス",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{\n    \"result\" : false,\n    \"errorMessage\" : \"システム認証に失敗しました。\"\n}",
+        "output": "json",
+        "x": 530,
+        "y": 200,
+        "wires": [
+            [
+                "134bbd93.0c2c1a"
+            ]
+        ]
+    },
+    {
+        "id": "134bbd93.0c2c1a",
+        "type": "http response",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "7412a61.a29ac58",
+        "type": "switch",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "SECURE_IDのチェック",
+        "property": "req.headers.x-secure-id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "const.secure_id",
+                "vt": "global"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 250,
+        "y": 140,
+        "wires": [
+            [
+                "4ef27a00.f120cc"
+            ],
+            [
+                "e9b4e2b1.da6d98"
+            ]
+        ]
+    },
+    {
+        "id": "3bd4f8b3.438518",
+        "type": "debug",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "URL",
+        "active": true,
+        "console": "true",
+        "complete": "req.url",
+        "x": 190,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "4ef27a00.f120cc",
+        "type": "change",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "body",
+        "rules": [
+            {
+                "t": "set",
+                "p": "data",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 100,
+        "wires": [
+            [
+                "f92607f0.477528"
+            ]
+        ]
+    },
+    {
+        "id": "b19e643b.4cd22",
+        "type": "dashDB in",
+        "z": "dd6e6fd8.b14ff8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT USER_ID FROM USER_SESSION WHERE SESSION_ID = ?;",
+        "params": "msg.session.session_id",
+        "name": "ユーザID取得",
+        "x": 1210,
+        "y": 80,
+        "wires": [
+            [
+                "632c1cdd.be3f44"
+            ]
+        ]
+    },
+    {
+        "id": "632c1cdd.be3f44",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "ユーザID設定",
+        "func": "if(msg.payload.USER_ID){\n    msg.session.user_id = msg.payload.USER_ID;\n}else{\n    msg.session.user_id = null;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1410,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "22028101.8c422e",
+        "type": "switch",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "",
+        "property": "session.session_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1010,
+        "y": 100,
+        "wires": [
+            [
+                "b19e643b.4cd22"
+            ],
+            [
+                "11aa04fc.b0ab7b"
+            ]
+        ]
+    },
+    {
+        "id": "efdd9e5.bd5236",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "Requestをdataに移動",
+        "info": "",
+        "x": 540,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "9c473405.0b9368",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セキュリティチェック",
+        "info": "",
+        "x": 240,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "b06d17bf.0c5f4",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "Sessionが存在する場合ユーザIDを設定",
+        "info": "",
+        "x": 1290,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "11aa04fc.b0ab7b",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "ユーザID設定",
+        "func": "msg.session.user_id = null;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1410,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "72a02c4f.7839ac",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セキュリティエラー",
+        "info": "",
+        "x": 530,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "103dece9.591cc3",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セッション",
+        "func": "var id = msg.req.headers[\"x-session-id\"];\nmsg.session = {};\nif(id){\n    msg.session.session_id = id;  \n}\n\n// ログ出力\nnode.log(JSON.stringify(msg.session));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 830,
+        "y": 100,
+        "wires": [
+            [
+                "22028101.8c422e"
+            ]
+        ]
+    },
+    {
+        "id": "f92607f0.477528",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "リクエスト",
+        "func": "if(msg.data === \"\"){\n    msg.data = {};\n}\nfor(var key in msg.req.params){\n    msg.data[key] = msg.req.params[key];\n}\n\n//ログ出力\nnode.log(JSON.stringify(msg.data));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 650,
+        "y": 100,
+        "wires": [
+            [
+                "103dece9.591cc3"
+            ]
+        ]
+    },
+    {
+        "id": "2f58f05.b1f799",
+        "type": "tab",
+        "label": "Training",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "30b39eca.8e540a",
+        "type": "http in",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "url": "/api/v1/training",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "921602be.f99648"
+            ]
+        ]
+    },
+    {
+        "id": "5ad2a2fd.f3c364",
+        "type": "http response",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1610,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "ff228d1.48c28f",
+        "type": "debug",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 650,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "b43c9549.04d8f",
+        "type": "comment",
+        "z": "2f58f05.b1f799",
+        "name": "Trainingデータ一覧",
+        "info": "",
+        "x": 130,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "921602be.f99648",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "2f58f05.b1f799",
+        "x": 470,
+        "y": 140,
+        "wires": [
+            [
+                "ff228d1.48c28f",
+                "76f4009f.e9b048"
+            ]
+        ]
+    },
+    {
+        "id": "3114c35.7a42e3c",
+        "type": "comment",
+        "z": "2f58f05.b1f799",
+        "name": "Trainingデータ登録",
+        "info": "",
+        "x": 130,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "31bf7321.937a94",
+        "type": "http in",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "url": "/api/v1/training/data",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 600,
+        "wires": [
+            [
+                "965f7301.00b02"
+            ]
+        ]
+    },
+    {
+        "id": "965f7301.00b02",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "2f58f05.b1f799",
+        "x": 470,
+        "y": 600,
+        "wires": [
+            [
+                "6e84eef0.9e65f",
+                "e3a74a80.22982"
+            ]
+        ]
+    },
+    {
+        "id": "6e84eef0.9e65f",
+        "type": "debug",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 650,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "324527d.9081458",
+        "type": "http response",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1610,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "8fa9a7a2.51a2b",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "メッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"処理完了\",\n    \"message\" : \"追加しました\"\n};\nmsg.statusCode=200;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 660,
+        "wires": [
+            [
+                "324527d.9081458"
+            ]
+        ]
+    },
+    {
+        "id": "cca35a61.faf3b8",
+        "type": "comment",
+        "z": "2f58f05.b1f799",
+        "name": "Trainingデータ更新",
+        "info": "",
+        "x": 130,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "e0b8acc.792155",
+        "type": "http in",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "url": "/api/v1/training/data",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 780,
+        "wires": [
+            [
+                "c50eb663.ea17"
+            ]
+        ]
+    },
+    {
+        "id": "c50eb663.ea17",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "2f58f05.b1f799",
+        "x": 470,
+        "y": 780,
+        "wires": [
+            [
+                "13e74cfa.55dbab",
+                "538b95b2.1b1fb4"
+            ]
+        ]
+    },
+    {
+        "id": "13e74cfa.55dbab",
+        "type": "debug",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 650,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "73b03c8f.e6ab6c",
+        "type": "http response",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1610,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "dcba7980.c2d19",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "メッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"処理完了\",\n    \"message\" : \"更新しました\"\n};\nmsg.statusCode=200;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 780,
+        "wires": [
+            [
+                "73b03c8f.e6ab6c"
+            ]
+        ]
+    },
+    {
+        "id": "c622d3f3.4fb658",
+        "type": "comment",
+        "z": "2f58f05.b1f799",
+        "name": "Trainingデータ削除",
+        "info": "",
+        "x": 130,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "288b3104.e784a6",
+        "type": "http in",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "url": "/api/v1/training/data",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 900,
+        "wires": [
+            [
+                "beab09b1.aec068"
+            ]
+        ]
+    },
+    {
+        "id": "beab09b1.aec068",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "2f58f05.b1f799",
+        "x": 470,
+        "y": 900,
+        "wires": [
+            [
+                "191f9610.ee7eda",
+                "d81ff9e5.23cdc8"
+            ]
+        ]
+    },
+    {
+        "id": "191f9610.ee7eda",
+        "type": "debug",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 650,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "32fd5326.f08ad4",
+        "type": "http response",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1610,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "143d2215.c50fd6",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "メッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"処理完了\",\n    \"message\" : \"削除しました\"\n};\nmsg.statusCode=200;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 900,
+        "wires": [
+            [
+                "32fd5326.f08ad4"
+            ]
+        ]
+    },
+    {
+        "id": "538b95b2.1b1fb4",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "UPDATE TRAINING_RELEVANCE\nSET RELEVANCE=?,UPDATE_USER=?,UPDATE_TIME=CURRENT TIMESTAMP\nWHERE QUERY_ID=? AND DATA_ID=?",
+        "params": "msg.data.relevance,msg.session.user_id,msg.data.query_id,msg.data.data_id",
+        "name": "TRAINING_RELEVANCE",
+        "x": 710,
+        "y": 780,
+        "wires": [
+            [
+                "e44ce09.6e9ab2"
+            ]
+        ]
+    },
+    {
+        "id": "d81ff9e5.23cdc8",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "DELETE FROM TRAINING_RELEVANCE\nWHERE QUERY_ID=? AND DATA_ID=?\n",
+        "params": "msg.data.query_id,msg.data.data_id",
+        "name": "TRAINING_RELEVANCE",
+        "x": 710,
+        "y": 900,
+        "wires": [
+            [
+                "a4d5d5dc.5d6a98"
+            ]
+        ]
+    },
+    {
+        "id": "4d377269.425864",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "INSERT INTO TRAINING_RELEVANCE(\nQUERY_ID,DATA_ID,RELEVANCE,INSERT_USER,INSERT_TIME)\nVALUES(?,?,?,?,CURRENT TIMESTAMP)",
+        "params": "msg.data.query_id,msg.data.data_id,msg.data.relevance,msg.session.user_id",
+        "name": "TRAINING_RELEVANCE",
+        "x": 710,
+        "y": 660,
+        "wires": [
+            [
+                "26661ef4.01758a"
+            ]
+        ]
+    },
+    {
+        "id": "76f4009f.e9b048",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "取得範囲設定",
+        "func": "var limit = msg.data.l || 10;\nvar page = msg.data.p || 1;\n\nif(isNaN(limit) || isNaN(page)){\n    msg.param = null;\n}else{\n    // 1+(limit * (page - 1))~ limit*p\n    msg.param = {\n        from : limit * (page-1) + 1,\n        to : limit * page\n    };\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 140,
+        "wires": [
+            [
+                "ecdd609b.e10688"
+            ]
+        ]
+    },
+    {
+        "id": "ecdd609b.e10688",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT COUNT(*) AS TOTAL FROM TRAINING_QUERY Q\nWHERE EXISTS(\n  SELECT * FROM TRAINING_RELEVANCE R\n  WHERE Q.QUERY_ID = R.QUERY_ID\n  AND\tQ.DELETE_FLAG = 0\n);",
+        "params": "",
+        "name": "COUNT TRAINING_QUERY",
+        "x": 720,
+        "y": 180,
+        "wires": [
+            [
+                "e1b1c463.a4d528"
+            ]
+        ]
+    },
+    {
+        "id": "7fc38509.faf964",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT Q.QUERY_ID,Q.QUERY,R.DATA_ID,R.RELEVANCE\nFROM TRAINING_QUERY Q,TRAINING_RELEVANCE R\nWHERE Q.QUERY_ID = R.QUERY_ID\nAND   Q.DELETE_FLAG = 0\nAND   Q.QUERY_ID BETWEEN ? AND ?;",
+        "params": "msg.payload.from,msg.payload.to",
+        "name": "TRAINING_QUERY/RELEVANCE",
+        "x": 740,
+        "y": 260,
+        "wires": [
+            [
+                "9f6d2dad.1affe8"
+            ]
+        ]
+    },
+    {
+        "id": "e1b1c463.a4d528",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "x": 989,
+        "y": 180,
+        "wires": [
+            [
+                "6c2f5d15.eff054"
+            ]
+        ]
+    },
+    {
+        "id": "9f6d2dad.1affe8",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "x": 989,
+        "y": 260,
+        "wires": [
+            [
+                "e2eb1eb3.fc429"
+            ]
+        ]
+    },
+    {
+        "id": "6c2f5d15.eff054",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "レスポンス設定",
+        "func": "msg.count = msg.payload.TOTAL;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1329,
+        "y": 180,
+        "wires": [
+            [
+                "ed2d79eb.40321"
+            ]
+        ]
+    },
+    {
+        "id": "e2eb1eb3.fc429",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "レスポンス整形",
+        "func": "function format(data){\n    var formatted = {};\n    for(var key in data){\n        formatted[key.toLowerCase()] = data[key];\n    }\n    return formatted;\n}\nvar data = [];\n\nif(!Array.isArray(msg.payload)){\n    data.push(format(msg.payload));\n}else{\n    for(i=0; i < msg.payload.length; i++){\n        data.push(format(msg.payload[i]));\n    }\n}\nmsg.payload = {\n    count : msg.count,\n    result : data\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1329,
+        "y": 260,
+        "wires": [
+            [
+                "5ad2a2fd.f3c364"
+            ]
+        ]
+    },
+    {
+        "id": "9b6c10ca.41ecf8",
+        "type": "comment",
+        "z": "2f58f05.b1f799",
+        "name": "License",
+        "info": "/**\n * Copyright 2017 Nippon Information and Communication Corporation\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */",
+        "x": 90,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "75ff7181.922f",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT\n  QUERY_ID\nFROM\n  (\n    SELECT\n      QUERY_ID,\n      ROWNUMBER() OVER (ORDER BY QUERY_ID) AS ROWNUM\n    FROM\n      TRAINING_QUERY Q\n    WHERE EXISTS(\n      SELECT * FROM TRAINING_RELEVANCE R\n      WHERE Q.QUERY_ID = R.QUERY_ID\n      AND\tQ.DELETE_FLAG = 0\n    )\n  ) AS tbl\nWHERE\n  ROWNUM between ? AND ?\nORDER BY ROWNUM\n;",
+        "params": "msg.param.from,msg.param.to",
+        "name": "TARGET IDs",
+        "x": 670,
+        "y": 220,
+        "wires": [
+            [
+                "32d099e8.b9033e"
+            ]
+        ]
+    },
+    {
+        "id": "32d099e8.b9033e",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "x": 989,
+        "y": 220,
+        "wires": [
+            [
+                "8f1af8a5.5c4998"
+            ]
+        ]
+    },
+    {
+        "id": "8f1af8a5.5c4998",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "取得範囲設定",
+        "func": "var payload = {\n    \"from\":msg.payload[0].QUERY_ID,\n    \"to\":msg.payload[msg.payload.length-1].QUERY_ID\n};\n\nmsg.payload = payload;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1329,
+        "y": 220,
+        "wires": [
+            [
+                "7fc38509.faf964"
+            ]
+        ]
+    },
+    {
+        "id": "f3bf0618.a796f8",
+        "type": "http in",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "url": "/api/v1/training",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 400,
+        "wires": [
+            [
+                "ef1c024e.88d01"
+            ]
+        ]
+    },
+    {
+        "id": "d24ebc1d.f6076",
+        "type": "comment",
+        "z": "2f58f05.b1f799",
+        "name": "Trainingデータ登録",
+        "info": "",
+        "x": 130,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "ef1c024e.88d01",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "2f58f05.b1f799",
+        "x": 470,
+        "y": 400,
+        "wires": [
+            [
+                "2fad60f2.708b28",
+                "9bc921c0.11c1e8"
+            ]
+        ]
+    },
+    {
+        "id": "2fad60f2.708b28",
+        "type": "debug",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 650,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "870f8221.05e51",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "INSERT INTO TRAINING_QUERY(QUERY_ID,QUERY,INSERT_USER,INSERT_TIME)\nVALUES(?,?,?,CURRENT TIMESTAMP);",
+        "params": "msg.data.query_id,msg.data.query,msg.session.user_id",
+        "name": "TRAINING_QUERY",
+        "x": 690,
+        "y": 440,
+        "wires": [
+            [
+                "9b88e5c3.22dd78"
+            ]
+        ]
+    },
+    {
+        "id": "9bc921c0.11c1e8",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT (NEXT VALUE FOR SEQ_QUERY_ID) AS QUERY_ID FROM SYSIBM.DUAL;",
+        "params": "",
+        "name": "SEQ_QUERY_ID",
+        "x": 680,
+        "y": 400,
+        "wires": [
+            [
+                "c1318f5.2e77ef"
+            ]
+        ]
+    },
+    {
+        "id": "c1318f5.2e77ef",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "x": 980,
+        "y": 400,
+        "wires": [
+            [
+                "bca6616e.756938"
+            ]
+        ]
+    },
+    {
+        "id": "26661ef4.01758a",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "x": 980,
+        "y": 660,
+        "wires": [
+            [
+                "8fa9a7a2.51a2b"
+            ]
+        ]
+    },
+    {
+        "id": "a4d5d5dc.5d6a98",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "x": 980,
+        "y": 900,
+        "wires": [
+            [
+                "143d2215.c50fd6"
+            ]
+        ]
+    },
+    {
+        "id": "e44ce09.6e9ab2",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "x": 980,
+        "y": 780,
+        "wires": [
+            [
+                "dcba7980.c2d19"
+            ]
+        ]
+    },
+    {
+        "id": "bca6616e.756938",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "ID設定",
+        "func": "msg.data.query_id = msg.payload.QUERY_ID;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1310,
+        "y": 400,
+        "wires": [
+            [
+                "870f8221.05e51"
+            ]
+        ]
+    },
+    {
+        "id": "9b88e5c3.22dd78",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "x": 980,
+        "y": 440,
+        "wires": [
+            [
+                "5f674a70.231fc4"
+            ]
+        ]
+    },
+    {
+        "id": "5f674a70.231fc4",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "INSERT INTO TRAINING_RELEVANCE(\nQUERY_ID,DATA_ID,RELEVANCE,INSERT_USER,INSERT_TIME)\nVALUES(?,?,?,?,CURRENT TIMESTAMP)",
+        "params": "msg.data.query_id,msg.data.data_id,msg.data.relevance,msg.session.user_id",
+        "name": "TRAINING_RELEVANCE",
+        "x": 710,
+        "y": 480,
+        "wires": [
+            [
+                "8066c5d6.c783f"
+            ]
+        ]
+    },
+    {
+        "id": "8066c5d6.c783f",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "x": 980,
+        "y": 480,
+        "wires": [
+            [
+                "1a2dfd10.4a8e13"
+            ]
+        ]
+    },
+    {
+        "id": "1a2dfd10.4a8e13",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "メッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"処理完了\",\n    \"message\" : \"登録しました\"\n};\nmsg.statusCode=200;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 480,
+        "wires": [
+            [
+                "21b4610a.dbfc5e"
+            ]
+        ]
+    },
+    {
+        "id": "21b4610a.dbfc5e",
+        "type": "http response",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1610,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "e3a74a80.22982",
+        "type": "dashDB in",
+        "z": "2f58f05.b1f799",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT 1 FROM TRAINING_RELEVANCE\nWHERE QUERY_ID = ? AND DATA_ID = ?",
+        "params": "msg.data.query_id,msg.data.data_id",
+        "name": "存在チェック",
+        "x": 680,
+        "y": 600,
+        "wires": [
+            [
+                "d1939bf7.d8f288"
+            ]
+        ]
+    },
+    {
+        "id": "6d7d18a0.3b45b8",
+        "type": "switch",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "property": "payload.length",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1170,
+        "y": 600,
+        "wires": [
+            [
+                "c4ae0497.706b7"
+            ],
+            [
+                "4d377269.425864"
+            ]
+        ]
+    },
+    {
+        "id": "d1939bf7.d8f288",
+        "type": "subflow:4350d699.efdaa8",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "x": 980,
+        "y": 600,
+        "wires": [
+            [
+                "6d7d18a0.3b45b8"
+            ]
+        ]
+    },
+    {
+        "id": "c4ae0497.706b7",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "エラーメッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"エラー\",\n    \"message\" : \"指定した回答IDのデータは既に存在します\"\n};\n\nmsg.statusCode = 409;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1360,
+        "y": 580,
+        "wires": [
+            [
+                "324527d.9081458"
+            ]
+        ]
+    },
+    {
+        "id": "a4952b22.b38fa",
+        "type": "function",
+        "z": "2f58f05.b1f799",
+        "name": "レスポンス整形(0件)",
+        "func": "msg.payload = {\n    count : 0,\n    result : []\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1740,
+        "y": 160,
+        "wires": [
+            [
+                "5ad2a2fd.f3c364"
+            ]
+        ]
+    },
+    {
+        "id": "ed2d79eb.40321",
+        "type": "switch",
+        "z": "2f58f05.b1f799",
+        "name": "",
+        "property": "count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1530,
+        "y": 180,
+        "wires": [
+            [
+                "a4952b22.b38fa"
+            ],
+            [
+                "75ff7181.922f"
+            ]
+        ]
+    }
+]

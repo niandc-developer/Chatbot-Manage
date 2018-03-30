@@ -1,0 +1,97 @@
+<%
+/**
+ * Copyright 2017 Nippon Information and Communication Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+%>
+<!DOCTYPE html>
+<html>
+<%- include("../common/head"); %>
+<body>
+<%- include("../common/header",{ dir : [{ name: "ログ一覧", path: ""}]});%>
+	<div class="container">
+
+    <div class="page-header">
+      <h2 class="text-primary">ログ一覧</h2>
+      <h5 class="text-primary">ログを一覧で表示します</h5>
+    </div>
+
+		<div class="text-right">
+			<ul class="pagination" style="margin-bottom: 10px;">
+				<li>
+					<a href="./list?p=1" aria-label="最初のページ"><span aria-hidden="true">«</span></a>
+				</li>
+				<% for(var i=page.first; i<=page.last; i++){ %>
+					<% if(i == page.now){ %>
+						<li class="active"><a href="./list?p=<%= i %>"><%= i %></a></li>
+					<% } else { %>
+						<li><a href="./list?p=<%= i %>"><%= i %></a></li>
+					<% } %>
+				<% } %>
+				<li>
+					<a href="./list?p=<%= page.max %>" aria-label="最後のページ"><span aria-hidden="true">»</span></a>
+				</li>
+			</ul>
+		</div>
+
+		<table class="table table-condensed table-bordered" id="myTable" style="table-layout:fixed;">
+      <thead>
+        <tr class="info">
+          <th style="width:40px;">ID</th>
+          <th style="width:100px;">ユーザID</th>
+          <th>時刻</th>
+          <th>機能</th>
+					<th>入力種別</th>
+					<th>リクエスト</th>
+					<th>レスポンス</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(var i=0; i<body.length;i++){ %>
+        <tr>
+          <td><%= body[i]['log_id'] %></td>
+          <!-- td><%= body[i]['session_id'] %></td -->
+          <td><%= body[i]['user_id'] %></td>
+          <td><%= body[i]['log_time'] %></td>
+					<td><%= body[i]['function_type'] %></td>
+					<td><%= body[i]['input_type'] %></td>
+					<td><%= body[i]['request'] %></td>
+					<td><%= body[i]['response'] %></td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+		<div class="text-right">
+			<ul class="pagination" style="margin-top: 10px;">
+				<li>
+					<a href="./list?p=1" aria-label="最初のページ"><span aria-hidden="true">«</span></a>
+				</li>
+				<% for(var i=page.first; i<=page.last; i++){ %>
+					<% if(i == page.now){ %>
+						<li class="active"><a href="./list?p=<%= i %>"><%= i %></a></li>
+					<% } else { %>
+						<li><a href="./list?p=<%= i %>"><%= i %></a></li>
+					<% } %>
+				<% } %>
+				<li>
+					<a href="./list?p=<%= page.max %>" aria-label="最後のページ"><span aria-hidden="true">»</span></a>
+				</li>
+			</ul>
+		</div>
+
+  </div>
+<%- include("../common/footer"); %>
+</body>
+</html>

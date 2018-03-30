@@ -1,0 +1,23 @@
+{
+  "name": "NIC-ChatBot-Manage",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "~*",
+    "ejs": "*",
+    "body-parser": "*",
+    "request": "*",
+    "express-session" : "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.ng.bluemix.net/Takuya_Yamaguchi/WatsonPocManage.git"
+  },
+  "author": "Nippon Information and Communication Corporation",
+  "license": "Apache-2.0",
+  "engines": {
+		"node": ">=6.11.1"
+	}
+}

@@ -1,0 +1,955 @@
+[
+    {
+        "id": "dd6e6fd8.b14ff8",
+        "type": "subflow",
+        "name": "API開始処理",
+        "info": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "3bd4f8b3.438518"
+                    },
+                    {
+                        "id": "4ef27a00.f120cc"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1680,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "632c1cdd.be3f44",
+                        "port": 0
+                    },
+                    {
+                        "id": "11aa04fc.b0ab7b",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "e9b4e2b1.da6d98",
+        "type": "template",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "エラーレスポンス",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{\n    \"result\" : false,\n    \"errorMessage\" : \"システム認証に失敗しました。\"\n}",
+        "output": "json",
+        "x": 530,
+        "y": 200,
+        "wires": [
+            [
+                "134bbd93.0c2c1a"
+            ]
+        ]
+    },
+    {
+        "id": "134bbd93.0c2c1a",
+        "type": "http response",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "7412a61.a29ac58",
+        "type": "switch",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "SECURE_IDのチェック",
+        "property": "req.headers.x-secure-id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "const.secure_id",
+                "vt": "global"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 250,
+        "y": 140,
+        "wires": [
+            [
+                "4ef27a00.f120cc"
+            ],
+            [
+                "e9b4e2b1.da6d98"
+            ]
+        ]
+    },
+    {
+        "id": "3bd4f8b3.438518",
+        "type": "debug",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "URL",
+        "active": true,
+        "console": "true",
+        "complete": "req.url",
+        "x": 190,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "4ef27a00.f120cc",
+        "type": "change",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "body",
+        "rules": [
+            {
+                "t": "set",
+                "p": "data",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 100,
+        "wires": [
+            [
+                "f92607f0.477528"
+            ]
+        ]
+    },
+    {
+        "id": "b19e643b.4cd22",
+        "type": "dashDB in",
+        "z": "dd6e6fd8.b14ff8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT USER_ID FROM USER_SESSION WHERE SESSION_ID = ?;",
+        "params": "msg.session.session_id",
+        "name": "ユーザID取得",
+        "x": 1210,
+        "y": 80,
+        "wires": [
+            [
+                "632c1cdd.be3f44"
+            ]
+        ]
+    },
+    {
+        "id": "632c1cdd.be3f44",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "ユーザID設定",
+        "func": "if(msg.payload.USER_ID){\n    msg.session.user_id = msg.payload.USER_ID;\n}else{\n    msg.session.user_id = null;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1410,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "22028101.8c422e",
+        "type": "switch",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "",
+        "property": "session.session_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1010,
+        "y": 100,
+        "wires": [
+            [
+                "b19e643b.4cd22"
+            ],
+            [
+                "11aa04fc.b0ab7b"
+            ]
+        ]
+    },
+    {
+        "id": "efdd9e5.bd5236",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "Requestをdataに移動",
+        "info": "",
+        "x": 540,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "9c473405.0b9368",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セキュリティチェック",
+        "info": "",
+        "x": 240,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "b06d17bf.0c5f4",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "Sessionが存在する場合ユーザIDを設定",
+        "info": "",
+        "x": 1290,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "11aa04fc.b0ab7b",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "ユーザID設定",
+        "func": "msg.session.user_id = null;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1410,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "72a02c4f.7839ac",
+        "type": "comment",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セキュリティエラー",
+        "info": "",
+        "x": 530,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "103dece9.591cc3",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "セッション",
+        "func": "var id = msg.req.headers[\"x-session-id\"];\nmsg.session = {};\nif(id){\n    msg.session.session_id = id;  \n}\n\n// ログ出力\nnode.log(JSON.stringify(msg.session));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 830,
+        "y": 100,
+        "wires": [
+            [
+                "22028101.8c422e"
+            ]
+        ]
+    },
+    {
+        "id": "f92607f0.477528",
+        "type": "function",
+        "z": "dd6e6fd8.b14ff8",
+        "name": "リクエスト",
+        "func": "if(msg.data === \"\"){\n    msg.data = {};\n}\nfor(var key in msg.req.params){\n    msg.data[key] = msg.req.params[key];\n}\n\n//ログ出力\nnode.log(JSON.stringify(msg.data));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 650,
+        "y": 100,
+        "wires": [
+            [
+                "103dece9.591cc3"
+            ]
+        ]
+    },
+    {
+        "id": "bfe94f4f.2903a8",
+        "type": "tab",
+        "label": "Feedback",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "ec317f11.4077d",
+        "type": "http in",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "url": "/api/v1/feedback",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "eb6e4bfe.f02ab8"
+            ]
+        ]
+    },
+    {
+        "id": "44655187.e711d",
+        "type": "dashDB in",
+        "z": "bfe94f4f.2903a8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT UF.FEEDBACK_ID,UF.QUESTION_ID,UF.DATA_ID,UQ.QUESTION_DATA,US.USER_ID\nFROM USER_FEEDBACK UF, USER_QUESTION UQ, USER_SESSION US\nWHERE UF.QUESTION_ID = UQ.QUESTION_ID\nAND UQ.SESSION_ID = US.SESSION_ID\nAND\tUF.COPE_FLAG = 0\nORDER BY FEEDBACK_ID;",
+        "params": "",
+        "name": "USER_FEEDBACK",
+        "x": 690,
+        "y": 140,
+        "wires": [
+            [
+                "72ec2098.8c392"
+            ]
+        ]
+    },
+    {
+        "id": "3ffad36e.56fcc4",
+        "type": "http response",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1110,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "b696c1ef.23d928",
+        "type": "comment",
+        "z": "bfe94f4f.2903a8",
+        "name": "Feedbackの取得",
+        "info": "",
+        "x": 120,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "cd249f3b.18341",
+        "type": "http in",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "url": "/api/v1/feedback/good",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 220,
+        "wires": [
+            [
+                "adad52c0.6af2a"
+            ]
+        ]
+    },
+    {
+        "id": "7e91550a.a59afc",
+        "type": "http in",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "url": "/api/v1/feedback/bad",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 300,
+        "wires": [
+            [
+                "c2db4c81.1d39f"
+            ]
+        ]
+    },
+    {
+        "id": "142596a4.e6c8d1",
+        "type": "dashDB in",
+        "z": "bfe94f4f.2903a8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT UF.FEEDBACK_ID,UF.QUESTION_ID,UF.DATA_ID,UQ.QUESTION_DATA,US.USER_ID\nFROM USER_FEEDBACK UF, USER_QUESTION UQ, USER_SESSION US\nWHERE UF.QUESTION_ID = UQ.QUESTION_ID\nAND UQ.SESSION_ID = US.SESSION_ID\nAND\tUF.COPE_FLAG = 0\nAND UF.DATA_ID IS NOT NULL\nORDER BY FEEDBACK_ID;\n",
+        "params": "",
+        "name": "USER_FEEDBACK",
+        "x": 690,
+        "y": 220,
+        "wires": [
+            [
+                "502c937.84087ec"
+            ]
+        ]
+    },
+    {
+        "id": "d0aba7cb.dd2c58",
+        "type": "dashDB in",
+        "z": "bfe94f4f.2903a8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT UF.FEEDBACK_ID,UF.QUESTION_ID,UF.DATA_ID,UQ.QUESTION_DATA,US.USER_ID\nFROM USER_FEEDBACK UF, USER_QUESTION UQ, USER_SESSION US\nWHERE UF.QUESTION_ID = UQ.QUESTION_ID\nAND UQ.SESSION_ID = US.SESSION_ID\nAND\tUF.COPE_FLAG = 0\nAND UF.DATA_ID IS NULL\nORDER BY FEEDBACK_ID;",
+        "params": "",
+        "name": "USER_FEEDBACK",
+        "x": 690,
+        "y": 300,
+        "wires": [
+            [
+                "3aefeac3.fa769e"
+            ]
+        ]
+    },
+    {
+        "id": "aea2b954.45945",
+        "type": "debug",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 650,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "72ec2098.8c392",
+        "type": "function",
+        "z": "bfe94f4f.2903a8",
+        "name": "レスポンス整形",
+        "func": "function format(data){\n    return data;\n    /*\n    var formatted = {};\n    for(var key in data){\n        formatted[key.toLowerCase()] = data[key];\n    }\n    return formatted;\n    */\n}\nvar data = [];\n\nif(!Array.isArray(msg.payload)){\n    data.push(format(msg.payload));\n}else{\n    for(i=0; i < msg.payload.length; i++){\n        data.push(format(msg.payload[i]));\n    }\n}\nmsg.payload = data;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 920,
+        "y": 140,
+        "wires": [
+            [
+                "3ffad36e.56fcc4"
+            ]
+        ]
+    },
+    {
+        "id": "eb6e4bfe.f02ab8",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "bfe94f4f.2903a8",
+        "x": 470,
+        "y": 140,
+        "wires": [
+            [
+                "44655187.e711d",
+                "7f9e155d.4434ac"
+            ]
+        ]
+    },
+    {
+        "id": "adad52c0.6af2a",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "bfe94f4f.2903a8",
+        "x": 470,
+        "y": 220,
+        "wires": [
+            [
+                "142596a4.e6c8d1",
+                "aea2b954.45945"
+            ]
+        ]
+    },
+    {
+        "id": "c2db4c81.1d39f",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "bfe94f4f.2903a8",
+        "x": 470,
+        "y": 300,
+        "wires": [
+            [
+                "d0aba7cb.dd2c58",
+                "446fc0d0.4d066"
+            ]
+        ]
+    },
+    {
+        "id": "f421e30c.68dcf",
+        "type": "http in",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "url": "/api/v1/feedback/:id",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 480,
+        "wires": [
+            [
+                "f1a0eb9d.375228"
+            ]
+        ]
+    },
+    {
+        "id": "f1a0eb9d.375228",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "x": 470,
+        "y": 480,
+        "wires": [
+            [
+                "2f7bf5fa.25bfca",
+                "d3ce3db6.23fb78"
+            ]
+        ]
+    },
+    {
+        "id": "6633eaa0.afd5ac",
+        "type": "comment",
+        "z": "bfe94f4f.2903a8",
+        "name": "Feedbackを処理済設定",
+        "info": "",
+        "x": 140,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "a4179205.f8fb8",
+        "type": "function",
+        "z": "bfe94f4f.2903a8",
+        "name": "メッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"処理完了\",\n    \"message\" : \"削除しました\"\n};\nmsg.statusCode=200;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1300,
+        "y": 480,
+        "wires": [
+            [
+                "ee41eb5f.1c5d9"
+            ]
+        ]
+    },
+    {
+        "id": "ee41eb5f.1c5d9",
+        "type": "http response",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1490,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "2f7bf5fa.25bfca",
+        "type": "debug",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 650,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "d3ce3db6.23fb78",
+        "type": "dashDB in",
+        "z": "bfe94f4f.2903a8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "UPDATE USER_FEEDBACK\nSET COPE_FLAG=1,UPDATE_USER=?,UPDATE_TIME=CURRENT TIMESTAMP\nWHERE FEEDBACK_ID=?;",
+        "params": "msg.session.user_id,msg.data.id",
+        "name": "USER_FEEDBACK",
+        "x": 1070,
+        "y": 480,
+        "wires": [
+            [
+                "a4179205.f8fb8"
+            ]
+        ]
+    },
+    {
+        "id": "1fa0404.012064",
+        "type": "comment",
+        "z": "bfe94f4f.2903a8",
+        "name": "対象を処理済に設定",
+        "info": "",
+        "x": 1070,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "ea34986d.3cf518",
+        "type": "comment",
+        "z": "bfe94f4f.2903a8",
+        "name": "License",
+        "info": "/**\n * Copyright 2017 Nippon Information and Communication Corporation\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */",
+        "x": 90,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "502c937.84087ec",
+        "type": "function",
+        "z": "bfe94f4f.2903a8",
+        "name": "レスポンス整形",
+        "func": "function format(data){\n    return data;\n    /*\n    var formatted = {};\n    for(var key in data){\n        formatted[key.toLowerCase()] = data[key];\n    }\n    return formatted;\n    */\n}\nvar data = [];\n\nif(!Array.isArray(msg.payload)){\n    data.push(format(msg.payload));\n}else{\n    for(i=0; i < msg.payload.length; i++){\n        data.push(format(msg.payload[i]));\n    }\n}\nmsg.payload = data;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 920,
+        "y": 220,
+        "wires": [
+            [
+                "d9d987d5.1bc8e8"
+            ]
+        ]
+    },
+    {
+        "id": "d9d987d5.1bc8e8",
+        "type": "http response",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1110,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "3aefeac3.fa769e",
+        "type": "function",
+        "z": "bfe94f4f.2903a8",
+        "name": "レスポンス整形",
+        "func": "function format(data){\n    return data;\n    /*\n    var formatted = {};\n    for(var key in data){\n        formatted[key.toLowerCase()] = data[key];\n    }\n    return formatted;\n    */\n}\nvar data = [];\n\nif(!Array.isArray(msg.payload)){\n    data.push(format(msg.payload));\n}else{\n    for(i=0; i < msg.payload.length; i++){\n        data.push(format(msg.payload[i]));\n    }\n}\nmsg.payload = data;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 920,
+        "y": 300,
+        "wires": [
+            [
+                "b55718d5.932bc8"
+            ]
+        ]
+    },
+    {
+        "id": "b55718d5.932bc8",
+        "type": "http response",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1110,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "446fc0d0.4d066",
+        "type": "debug",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 650,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "7f9e155d.4434ac",
+        "type": "debug",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 650,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "3a566da9.5e3872",
+        "type": "dashDB in",
+        "z": "bfe94f4f.2903a8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT (NEXT VALUE FOR SEQ_QUERY_ID) AS QUERY_ID, UQ.QUESTION_DATA AS QUERY,UF.FEEDBACK_ID\nFROM USER_FEEDBACK UF, USER_QUESTION UQ\nWHERE UF.QUESTION_ID = UQ.QUESTION_ID\nAND\tUF.COPE_FLAG = 0\nAND UF.FEEDBACK_ID = ?;",
+        "params": "msg.data.feedback_id",
+        "name": "USER_FEEDBACK,USER_QUESTION",
+        "x": 750,
+        "y": 760,
+        "wires": [
+            [
+                "c010b52a.1c2e48"
+            ]
+        ]
+    },
+    {
+        "id": "6bb9aa38.45b2a4",
+        "type": "dashDB in",
+        "z": "bfe94f4f.2903a8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "SELECT (NEXT VALUE FOR SEQ_QUERY_ID) AS QUERY_ID, UQ.QUESTION_DATA AS QUERY,UF.FEEDBACK_ID,UF.DATA_ID, 3 AS RELEVANCE\nFROM USER_FEEDBACK UF, USER_QUESTION UQ\nWHERE UF.QUESTION_ID = UQ.QUESTION_ID\nAND\tUF.COPE_FLAG = 0\nAND UF.DATA_ID IS NOT NULL\nORDER BY FEEDBACK_ID;",
+        "params": "",
+        "name": "USER_FEEDBACK,USER_QUESTION",
+        "x": 750,
+        "y": 660,
+        "wires": [
+            [
+                "9a2f3f08.39481"
+            ]
+        ]
+    },
+    {
+        "id": "c35ff306.01f838",
+        "type": "http in",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "url": "/api/v1/feedback/good/move",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 660,
+        "wires": [
+            [
+                "2a0fb196.e35aee"
+            ]
+        ]
+    },
+    {
+        "id": "2a0fb196.e35aee",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "bfe94f4f.2903a8",
+        "x": 470,
+        "y": 660,
+        "wires": [
+            [
+                "6bb9aa38.45b2a4"
+            ]
+        ]
+    },
+    {
+        "id": "9a2f3f08.39481",
+        "type": "function",
+        "z": "bfe94f4f.2903a8",
+        "name": "変数初期化",
+        "func": "var data = [];\n\nif(!Array.isArray(msg.payload)){\n    data.push(msg.payload);\n}else{\n    for(i=0; i < msg.payload.length; i++){\n        data.push(msg.payload[i]);\n    }\n}\n\nmsg.array = data;\nmsg.count = 0;\nmsg.maxCount = msg.array.length;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1050,
+        "y": 660,
+        "wires": [
+            [
+                "bc084fd5.853e38",
+                "aeaf9f53.0e6218"
+            ]
+        ]
+    },
+    {
+        "id": "aeaf9f53.0e6218",
+        "type": "function",
+        "z": "bfe94f4f.2903a8",
+        "name": "データ設定",
+        "func": "msg.item = msg.array[msg.count++];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1290,
+        "y": 660,
+        "wires": [
+            [
+                "f1dbb49d.91a2d8"
+            ]
+        ]
+    },
+    {
+        "id": "f3e8b0c8.68664",
+        "type": "switch",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "property": "count",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "maxCount",
+                "vt": "msg"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 1470,
+        "y": 720,
+        "wires": [
+            [
+                "aeaf9f53.0e6218"
+            ],
+            [
+                "f71cd18d.2e06e8"
+            ]
+        ]
+    },
+    {
+        "id": "f1dbb49d.91a2d8",
+        "type": "dashDB in",
+        "z": "bfe94f4f.2903a8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "INSERT INTO TRAINING_QUERY(QUERY_ID,QUERY,INSERT_USER,INSERT_TIME)\nVALUES(?,?,?,CURRENT TIMESTAMP);",
+        "params": "msg.item.QUERY_ID,msg.item.QUERY,msg.session.user_id",
+        "name": "TRAINING_QUERY",
+        "x": 1510,
+        "y": 660,
+        "wires": [
+            [
+                "d5767ee3.dc48a"
+            ]
+        ]
+    },
+    {
+        "id": "d5767ee3.dc48a",
+        "type": "dashDB in",
+        "z": "bfe94f4f.2903a8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "INSERT INTO TRAINING_RELEVANCE(\nQUERY_ID,DATA_ID,RELEVANCE,INSERT_USER,INSERT_TIME)\nVALUES(?,?,?,?,CURRENT TIMESTAMP)",
+        "params": "msg.item.QUERY_ID,msg.item.DATA_ID,msg.item.RELEVANCE,msg.session.user_id",
+        "name": "TRAINING_RELEVANCE",
+        "x": 1750,
+        "y": 660,
+        "wires": [
+            [
+                "6230af6e.333588"
+            ]
+        ]
+    },
+    {
+        "id": "f71cd18d.2e06e8",
+        "type": "function",
+        "z": "bfe94f4f.2903a8",
+        "name": "メッセージ設定",
+        "func": "//正常に終了\nmsg.payload = {\n    \"title\" : \"処理完了\",\n    \"message\" : \"学習データに移行しました\"\n};\nmsg.statusCode=200;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1700,
+        "y": 740,
+        "wires": [
+            [
+                "506703c.7209afc"
+            ]
+        ]
+    },
+    {
+        "id": "506703c.7209afc",
+        "type": "http response",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1950,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "38614a0d.2fbd3e",
+        "type": "http in",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "url": "/api/v1/feedback/bad/move",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 760,
+        "wires": [
+            [
+                "eed5f642.6e38e"
+            ]
+        ]
+    },
+    {
+        "id": "c194518f.3cdf78",
+        "type": "comment",
+        "z": "bfe94f4f.2903a8",
+        "name": "Feedback(Good)を学習データに移動",
+        "info": "",
+        "x": 180,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "4550c040.1b088",
+        "type": "comment",
+        "z": "bfe94f4f.2903a8",
+        "name": "Feedback(bad)を学習データに移動",
+        "info": "",
+        "x": 180,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "eed5f642.6e38e",
+        "type": "subflow:dd6e6fd8.b14ff8",
+        "z": "bfe94f4f.2903a8",
+        "x": 470,
+        "y": 760,
+        "wires": [
+            [
+                "3a566da9.5e3872"
+            ]
+        ]
+    },
+    {
+        "id": "bc084fd5.853e38",
+        "type": "debug",
+        "z": "bfe94f4f.2903a8",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 1210,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "6230af6e.333588",
+        "type": "dashDB in",
+        "z": "bfe94f4f.2903a8",
+        "dashDB": "",
+        "service": "PoC-Db2 Warehouse on Cloud",
+        "query": "UPDATE USER_FEEDBACK\nSET COPE_FLAG=1,UPDATE_USER=?,UPDATE_TIME=CURRENT TIMESTAMP\nWHERE FEEDBACK_ID=?;",
+        "params": "msg.session.user_id,msg.item.FEEDBACK_ID",
+        "name": "USER_FEEDBACK",
+        "x": 1990,
+        "y": 660,
+        "wires": [
+            [
+                "f3e8b0c8.68664"
+            ]
+        ]
+    },
+    {
+        "id": "c010b52a.1c2e48",
+        "type": "function",
+        "z": "bfe94f4f.2903a8",
+        "name": "データ設定",
+        "func": "msg.payload.DATA_ID = msg.data.data_id;\nmsg.payload.RELEVANCE = msg.data.relevance;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1050,
+        "y": 760,
+        "wires": [
+            [
+                "9a2f3f08.39481"
+            ]
+        ]
+    }
+]
