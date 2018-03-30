@@ -24,14 +24,14 @@ Watson Assistant と Discovery を用いたシンプルなチャットボットF
 2. Node-RED のフローエディタにログイン
 3. logic/flow にあるフロー定義をインポート（クリップボードから読み込み）
 4. Common フローの 接続情報設定ノード の中身を、環境に合わせて修正する
-  1. secure_id ： UIアプリ（このGitのアプリ）とロジックアプリ（このGit内にあるNode-REDのフロー）との間を通信する際のID
-  2. discovery ： Discoveryの接続情報
+    1. secure_id ： UIアプリ（このGitのアプリ）とロジックアプリ（このGit内にあるNode-REDのフロー）との間を通信する際のID
+    2. discovery ： Discoveryの接続情報
 
 ### UI環境の準備
 1. このGitにあるソースコードを、Node.jsランタイムにcf push
 2. ランタイムの環境変数に以下を設定
-  1. LOGIC_URL ： ロジックアプリのURL（ex. https://example.mybluemix.net/ ）
-  2. SECURE_ID ： ロジックアプリと通信する際のID（ロジックアプリの接続情報設定に設定した値）
+    1. LOGIC_URL ： ロジックアプリのURL（ex. https://example.mybluemix.net/ ）
+    2. SECURE_ID ： ロジックアプリと通信する際のID（ロジックアプリの接続情報設定に設定した値）
 
 
 ## Copyright
